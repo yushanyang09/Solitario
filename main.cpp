@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
    ifstream archivo;
-	// pruen
+	// pruen2
 		Juego solitario;
 	if (cargar(solitario, archivo)) {
 		mostrar(solitario); // se muestra el estado inicial
