@@ -3,7 +3,7 @@
 #include "juego.h"
 using namespace std;
 enum Estado { JUGANDO, GANADOR, BLOQUEO };
-
+// Holap
 struct Juego {
 	int filaMeta, colMeta;
 	Tablero tablero;
