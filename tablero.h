@@ -1,6 +1,5 @@
 #ifndef TABLERO_H
 #define TABLERO_H
-#include "tablero.h"
 #include <iostream>
 #include <fstream>
 using namespace std;

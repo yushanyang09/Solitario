@@ -4,10 +4,14 @@
 #include "movimiento.h"
 using namespace std;
 
+// Es posible que esta función pertenezca al módulo tablero
+Movimiento leerMovimiento(Juego solitario);
+
 int main() {
+
    ifstream archivo;
-	// pruen2
-		Juego solitario;
+
+   Juego solitario;
 	if (cargar(solitario, archivo)) {
 		mostrar(solitario); // se muestra el estado inicial
 		// empezamos a jugar
@@ -19,3 +23,5 @@ int main() {
 		// mostrar resultado de la partida (ganador o bloqueo)
 	}
 }
+
+
