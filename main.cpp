@@ -6,6 +6,8 @@ using namespace std;
 
 // Es posible que esta función pertenezca al módulo tablero
 Movimiento leerMovimiento(Juego solitario);
+void leerPosicion(int &f, int &c);
+
 
 int main() {
 

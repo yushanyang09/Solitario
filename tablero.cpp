@@ -24,9 +24,12 @@ bool cargar(Tablero&/*sal*/ tab, istream&/*ent/sal*/ entrada) {
 		for (int j = 0; j < tab.numColumnas; j++) {
 			int valor;
 			entrada >> valor;
-			escribirCelda(tab, i, j, valor);
+			escribirCelda(tab, i, j, Celda(valor));
 		}
 	}
+
+	return true; // Por ahora
+
 }
 
 int numFilas(Tablero const& tab) {
