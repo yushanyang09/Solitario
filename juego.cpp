@@ -53,7 +53,7 @@ bool cargar(Juego&/*sal*/ juego, istream&/*ent/sal*/ entrada) {
 	todoCorrecto = cargar(juego.tablero, entrada);
 
 	// Se lee e inserta la meta
-	cin >> juego.filaMeta >> juego.colMeta;
+	entrada >> juego.filaMeta >> juego.colMeta;
 
 	// Se establece el estado del juego
 	juego.estado = Estado(0);
@@ -110,6 +110,9 @@ void mostrar(Juego const& juego) {
 
 	// para cada fila
 	for (int fil = 0; fil < juego.tablero.numFilas; fil++) {
+		if (fil == juego.filaMeta) {
+
+		}
 		// primera línea
 		pintaBordeCelda(fil,juego);
 		// segunda línea, con la meta posiblemente
@@ -136,11 +139,11 @@ void nuevo_estado(Juego& juego) {
 }
 
 bool hay_ganador(Juego const& juego) {
-
+	return false;
 }
 
 bool hay_movimientos(Juego const& juego) {
-
+	return true;
 
 }
 Direccion obtenerDireccion(int posicion) {

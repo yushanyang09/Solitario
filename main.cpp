@@ -29,19 +29,31 @@ void leerPosicion(int& f, int& c);
 
 int main() {
     ifstream archivo;
-    archivo.open("tablero_enunciado");
-     Juego solitario;
-     if (cargar(solitario, archivo)) {
-         mostrar(solitario); // se muestra el estado inicial
-         // empezamos a jugar
-         do {
-             Movimiento movimiento = leerMovimiento(solitario);
-             jugar(solitario, movimiento);
-             mostrar(solitario);
-         } while (estado(solitario) == JUGANDO);
-         // mostrar resultado de la partida (ganador o bloqueo)
-     }
+    archivo.open("tablero_enunciado.txt");
+    if (!archivo.is_open()) {
+        cout << "Archivo no encontrado" << endl;
+    }
+    else {
+        Juego solitario;
+        if (cargar(solitario, archivo)) {
+            mostrar(solitario); // se muestra el estado inicial
+            // empezamos a jugar
+            do {
+                Movimiento movimiento = leerMovimiento(solitario);
+                jugar(solitario, movimiento);
+                mostrar(solitario);
+            } while (estado(solitario) == JUGANDO);
+            // mostrar resultado de la partida (ganador o bloqueo)
+        }
+    }
 }
 Movimiento leerMovimiento(Juego solitario) {
-
+    cout << "Selecciona una FICHA (fila y columna):";
+    int fila, columna;
+    leerPosicion(fila, columna);
+    Movimiento mov = inicializa(fila, columna);
+    return mov;
+}
+void leerPosicion(int& f, int& c) {
+    cin >> f>> c;
 }
