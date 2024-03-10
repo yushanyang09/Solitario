@@ -1,3 +1,5 @@
+#ifndef COLORES_H
+#define COLORES_H
 
 // Otra idea de colores en C++:
 //  
@@ -39,3 +41,4 @@
 
 #define BG_VERDELIMA    "\x1B[48;2;204;255;0m"
 #define BG_ROSA    "\x1B[48;2;255;0;255m"
+#endif // COLORES_H
