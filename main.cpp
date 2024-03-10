@@ -8,7 +8,7 @@ using namespace std;
 Movimiento leerMovimiento(Juego solitario);
 void leerPosicion(int &f, int &c);
 
-//comentario
+//comentar
 int main() {
 
    ifstream archivo;
