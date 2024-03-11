@@ -2,6 +2,7 @@
 #include "colores.h"
 #include "tablero.h"
 #include <iomanip>
+
 using namespace std;
 void mostrar(Juego const& juego);
 void pintaCabecera(Juego const& juego);
@@ -25,8 +26,6 @@ const char Square = char(219);
 
 const int DEFAULT_COLOR = -1;
 
-
-Direccion obtenerDireccion(int posicion);
 // Públicas
 
 // Procedimiento que crea un juego bloqueado con un tablero vacío
@@ -37,7 +36,7 @@ void inicializa(Juego& juego) {
 
 	// Se bloquea el juego y se añade el tablero
 	juego.estado = Estado(2);
-	inicializa(tab); // Tablero con dimensiones pero vacío
+	inicializa(tab);
 	juego.tablero = tab;
 
 }
@@ -83,13 +82,35 @@ bool posicionValida(Juego const& juego, int f, int c) {
 
 // Procedimiento que completa el movimiento con las direcciones posibles de la ficha
 void posiblesMovimientos(Juego const& juego, Movimiento& mov) {
+
+	// Variables
+	Movimiento movAux;
 	mov.cont = 0;
+
+	// i = 0 -> Arriba
+	// i = 1 -> Abajo
+	// i = 2 -> Izquierda
+	// i = 3 -> Derecha
 	for (int i = 0; i < NumDir; i++) {
-		if (mov.fila == dirs[i].first && mov.columna == dirs[i].second) {
-			Direccion dir = obtenerDireccion(i);
-			mov.direcciones[mov.cont] = dir;
+
+		// La siguiente casilla en direccion i debe tener una ficha
+		movAux = inicializa(mov.fila + dirs[i].first, mov.columna + dirs[i].second);
+
+		if (leerCelda(juego.tablero, movAux.fila, movAux.columna) == Celda(2)) {
+
+			// La siguiente casilla en dirección i debe estar vacía
+			movAux = inicializa(movAux.fila + dirs[i].first, movAux.columna + dirs[i].second);
+
+			if (leerCelda(juego.tablero, movAux.fila, movAux.columna) == Celda(1)) {
+				mov.direcciones[mov.cont] = Direccion(i);
+				mov.cont++;
+			}
 		}
 	}
+
+	// Si solo hubiese una dirección posible se establece como la activa
+	if (mov.cont == 1)
+		mov.dirActiva = mov.direcciones[0];
 
 }
 
@@ -97,9 +118,32 @@ Estado estado(Juego const& juego) {
 	return juego.estado;
 }
 
+// Modifica el juego aplicando el movimiento
 void jugar(Juego& juego, Movimiento const& mov) {
 
+	// Variables
+	Movimiento movPosibles = mov;
+
+	// Obtenemos las posibles direcciones que puede tomar el movimiento
+	posiblesMovimientos(juego, movPosibles);
+
+	// Casos especiales
+	// Solo tiene una dirección posible
+	if (movPosibles.cont == 0)
+		cout << "Ficha bloqueada";
+	else if (movPosibles.cont == 1)
+		ejecuta_movimiento(juego, movPosibles);
+	else {
+
+		cout << "Selecciona dirección:\n";
+		for (int i = 0; i < movPosibles.cont; i++) {
+			cout << i+1 << toString(movPosibles.direcciones[i]);
+		}
+
+	}
+
 }
+
 void mostrar(Juego const& juego) {
     system("cls"); // borrar consola (clear en Linux)
 	cout << RESET;
@@ -132,6 +176,15 @@ void mostrar(Juego const& juego) {
 // Privadas
 void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 
+	// La casilla del movimiento se vacia
+	escribirCelda(juego.tablero, mov.fila, mov.columna, Celda(0));
+
+	// La casilla sobre la que se salta se vacia
+	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first, mov.columna + dirs[mov.dirActiva].second, Celda(0));
+
+	// La casilla destino recibe la fichaa
+	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first * 2, mov.columna + dirs[mov.dirActiva].second * 2, Celda(0));
+
 }
 
 void nuevo_estado(Juego& juego) {
@@ -145,19 +198,6 @@ bool hay_ganador(Juego const& juego) {
 bool hay_movimientos(Juego const& juego) {
 	return true;
 
-}
-Direccion obtenerDireccion(int posicion) {
-	switch (posicion) {
-	case 0:
-		return ARRIBA;
-	case 1:
-		return ABAJO;
-	case 2:
-		return IZQUIERDA;
-	case 3:
-		return DERECHA;
-	}
-	return INDETERMINADA;
 }
 
 void pintaCabecera(Juego const& juego) {
