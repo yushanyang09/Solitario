@@ -130,10 +130,13 @@ void jugar(Juego& juego, Movimiento const& mov) {
 	// Casos especiales
 	// Solo tiene una dirección posible
 	if (movPosibles.cont == 0) {
-		cout << "Esa ficha no se puede mover";
+		cout << endl;
+		cout << "Esa ficha no se puede mover"<<endl;
 	}
-	else if (movPosibles.cont == 1)
+	else if (movPosibles.cont == 1) {
 		ejecuta_movimiento(juego, movPosibles);
+		mostrar(juego);
+	}
 	else {
 
 		cout << "Selecciona dirección:\n";
@@ -142,6 +145,7 @@ void jugar(Juego& juego, Movimiento const& mov) {
 		}
 
 	}
+	nuevo_estado(juego);
 
 }
 
@@ -178,13 +182,13 @@ void mostrar(Juego const& juego) {
 void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 
 	// La casilla del movimiento se vacia
-	escribirCelda(juego.tablero, mov.fila, mov.columna, Celda(0));
+	escribirCelda(juego.tablero, mov.fila, mov.columna, Celda(1));
 
 	// La casilla sobre la que se salta se vacia
-	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first, mov.columna + dirs[mov.dirActiva].second, Celda(0));
+	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first, mov.columna + dirs[mov.dirActiva].second, Celda(1));
 
 	// La casilla destino recibe la fichaa
-	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first * 2, mov.columna + dirs[mov.dirActiva].second * 2, Celda(0));
+	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first * 2, mov.columna + dirs[mov.dirActiva].second * 2, Celda(2));
 
 }
 

@@ -56,8 +56,6 @@ int main() {
             do {
                 movimiento = leerMovimiento(solitario);
                 jugar(solitario, movimiento);
-                mostrar(solitario);
-                nuevo_estado(solitario);
             } while (estado(solitario) == JUGANDO);
 
             // mostrar resultado de la partida (ganador o bloqueo)
