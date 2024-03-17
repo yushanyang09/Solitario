@@ -38,7 +38,7 @@ int main() {
 	inicializa(solitario);
 
 	// Se abre el archivo que contiene la información del tablero
-    archivo.open("tablero5x5.txt");
+    archivo.open("tablero_enunciado.txt");
 
 	// Se avisa si no se ha encontrado el fichero
     if (!archivo.is_open()) {
@@ -57,6 +57,7 @@ int main() {
                 movimiento = leerMovimiento(solitario);
                 jugar(solitario, movimiento);
                 mostrar(solitario);
+                nuevo_estado(solitario);
             } while (estado(solitario) == JUGANDO);
 
             // mostrar resultado de la partida (ganador o bloqueo)

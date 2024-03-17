@@ -130,8 +130,7 @@ void jugar(Juego& juego, Movimiento const& mov) {
 	// Casos especiales
 	// Solo tiene una dirección posible
 	if (movPosibles.cont == 0) {
-		nuevo_estado(juego);
-		cout << "Ficha bloqueada";
+		cout << "Esa ficha no se puede mover";
 	}
 	else if (movPosibles.cont == 1)
 		ejecuta_movimiento(juego, movPosibles);
