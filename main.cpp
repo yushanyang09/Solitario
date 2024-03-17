@@ -20,7 +20,7 @@
 #include "tablero.h"
 #include "juego.h"
 #include "movimiento.h"
- #include "colores.h"
+#include "colores.h"
 using namespace std;
 
 // Es posible que esta función pertenezca al módulo tablero

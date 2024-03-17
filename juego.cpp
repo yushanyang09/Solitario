@@ -129,8 +129,10 @@ void jugar(Juego& juego, Movimiento const& mov) {
 
 	// Casos especiales
 	// Solo tiene una dirección posible
-	if (movPosibles.cont == 0)
+	if (movPosibles.cont == 0) {
+		nuevo_estado(juego);
 		cout << "Ficha bloqueada";
+	}
 	else if (movPosibles.cont == 1)
 		ejecuta_movimiento(juego, movPosibles);
 	else {
@@ -188,15 +190,56 @@ void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 }
 
 void nuevo_estado(Juego& juego) {
-
+	if (hay_ganador(juego)){
+		juego.estado = Estado(1);
+	}
+	else if (hay_movimientos(juego)) {
+		juego.estado = Estado(0);
+	}
+	else {
+		juego.estado = Estado(2);
+	}
 }
 
 bool hay_ganador(Juego const& juego) {
+	int num_fichas = 0;
+
+	for (int i = 0; i < juego.tablero.numFilas; i++) {
+		for (int j = 0; j < juego.tablero.numColumnas; j++) {
+			if (leerCelda(juego.tablero,i,j)) {
+				num_fichas++;
+			}
+		}
+	}
+	if (num_fichas == 1) {
+		if (leerCelda(juego.tablero, juego.filaMeta, juego.colMeta) == Celda(2)) {
+			return true;
+		}
+	}
 	return false;
+	
 }
 
 bool hay_movimientos(Juego const& juego) {
-	return true;
+	for (int fila = 0; fila < juego.tablero.numFilas; fila++) {
+		for (int columna = 0; columna < juego.tablero.numColumnas; columna++) {
+			if (leerCelda(juego.tablero, fila, columna) == Celda(2)) {
+				Movimiento mov;
+				mov.fila = fila;
+				mov.columna = columna;
+				mov.cont = 0;
+
+				// Calcular los posibles movimientos desde esta celda
+				posiblesMovimientos(juego, mov);
+
+				// Si hay al menos un movimiento posible
+				if (mov.cont > 0) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 
 }
 
