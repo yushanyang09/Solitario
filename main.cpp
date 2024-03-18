@@ -33,34 +33,52 @@ int main() {
 	Juego solitario;
     ifstream archivo;
 	Movimiento movimiento;
+	char volver = 'N';
 
-	// Se crear el tablero vacio
-	inicializa(solitario);
+	// Gane o pierda, se volvería a iniciar el juego mientras el jugador quiera
+	do {
 
-	// Se abre el archivo que contiene la información del tablero
-    archivo.open("tablero_enunciado.txt");
+		// Se inicializa el flujo (necesario para volver a cargar otra partida)
+		archivo = ifstream();
 
-	// Se avisa si no se ha encontrado el fichero
-    if (!archivo.is_open()) {
-        cout << "Archivo no encontrado" << endl;
-    }
-    else {
+		// Se crear el tablero vacio
+		inicializa(solitario);
 
-		// Se carga el juego
-        if (cargar(solitario, archivo)) {
+		// Se abre el archivo que contiene la información del tablero
+		archivo.open("tablero4x4.txt");
 
-			// se muestra el estado inicial
-            mostrar(solitario);
+		// Se avisa si no se ha encontrado el fichero
+		if (!archivo.is_open()) {
+			cout << "Archivo no encontrado" << endl;
+		}
+		else {
 
-            // empezamos a jugar
-            do {
-                movimiento = leerMovimiento(solitario);
-                jugar(solitario, movimiento);
-            } while (estado(solitario) == JUGANDO);
+			// Se carga el juego
+			if (cargar(solitario, archivo)) {
 
-            // mostrar resultado de la partida (ganador o bloqueo)
-        }
-    }
+				// se muestra el estado inicial
+				mostrar(solitario);
+
+				// empezamos a jugar
+				do {
+					movimiento = leerMovimiento(solitario);
+					jugar(solitario, movimiento);
+				} while (estado(solitario) == JUGANDO);
+
+				// mostrar resultado de la partida (ganador o bloqueo)
+				if (estado(solitario) == GANADOR)
+					cout << "\t\t ! ! HAS GANADO ! ! ";
+				else
+					cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
+				cout << RESET << "\n\n";
+				cout << "Quieres volver a jugar [S/N]? ";
+				cin >> volver;
+			}
+
+		}
+
+	} while (volver == 'S');
+
 }
 Movimiento leerMovimiento(Juego solitario) {
 

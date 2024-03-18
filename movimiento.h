@@ -13,7 +13,6 @@ const pair<int, int> dirs[NumDir] = { {-1,0}, {1,0}, {0,-1}, {0,1} };
 enum Direccion { ARRIBA, ABAJO, IZQUIERDA, DERECHA, INDETERMINADA };
 string toString(Direccion d); // convierte una dir. en un string
 
-
 struct Movimiento {
 	int fila, columna;
 	Direccion dirActiva; // de todas las direcciones posibles, contiene la

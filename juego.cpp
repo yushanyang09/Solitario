@@ -123,26 +123,42 @@ void jugar(Juego& juego, Movimiento const& mov) {
 
 	// Variables
 	Movimiento movPosibles = mov;
+	int opcion = 0;
 
 	// Obtenemos las posibles direcciones que puede tomar el movimiento
 	posiblesMovimientos(juego, movPosibles);
 
 	// Casos especiales
-	// Solo tiene una dirección posible
+	// No tiene ninguna dirección posible
 	if (movPosibles.cont == 0) {
 		cout << endl;
 		cout << "Esa ficha no se puede mover"<<endl;
-	}
+	} // Solo tiene una dirección posible
 	else if (movPosibles.cont == 1) {
 		ejecuta_movimiento(juego, movPosibles);
 		mostrar(juego);
-	}
+	} // Tiene varias opciones
 	else {
 
-		cout << "Selecciona dirección:\n";
-		for (int i = 0; i < movPosibles.cont; i++) {
-			cout << i+1 << toString(movPosibles.direcciones[i]);
-		}
+		// Se solicita la direccion deseada, hasta que seleccione una valida
+		do {
+
+			cout << "Selecciona direccion:\n";
+			for (int i = 1; i <= movPosibles.cont; i++) {
+				cout << "\t" << i << " - " << toString(movPosibles.direcciones[i-1]) << '\n';
+			}
+			cin >> opcion;
+
+			if (opcion < 1 || opcion > movPosibles.cont)
+				cout << "Direccion invalida\n";
+			else {
+				fijarDireccionActiva(movPosibles, movPosibles.direcciones[opcion-1]);
+				ejecuta_movimiento(juego, movPosibles);
+				mostrar(juego);
+			}
+		} while (opcion < 1 || opcion > movPosibles.cont);
+
+
 
 	}
 	nuevo_estado(juego);
@@ -209,7 +225,7 @@ bool hay_ganador(Juego const& juego) {
 
 	for (int i = 0; i < juego.tablero.numFilas; i++) {
 		for (int j = 0; j < juego.tablero.numColumnas; j++) {
-			if (leerCelda(juego.tablero,i,j)) {
+			if (leerCelda(juego.tablero,i,j) == FICHA) {
 				num_fichas++;
 			}
 		}
