@@ -11,6 +11,7 @@ struct Juego {
 	int filaMeta, colMeta;
 	Tablero tablero;
 	Estado estado;
+	int pasos;
 	
 };
 
@@ -28,6 +29,7 @@ void ejecuta_movimiento(Juego& juego, Movimiento const& mov);
 void nuevo_estado(Juego& juego);
 bool hay_ganador(Juego const& juego);
 bool hay_movimientos(Juego const& juego);
-
+void generar(Juego& juego, int pasos);//para la generación del tablero aleatorio
+bool movimiento_inverso(Juego& juego);
 #endif
 

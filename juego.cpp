@@ -2,7 +2,9 @@
 #include "colores.h"
 #include "tablero.h"
 #include <iomanip>
-
+#include <cstdlib>   // Para la función rand()
+#include <ctime>     // Para la semilla 
+#include <set>
 using namespace std;
 void mostrar(Juego const& juego);
 void pintaCabecera(Juego const& juego);
@@ -10,6 +12,11 @@ void pintaLinea(char esquinaIzda, char cruce, char esquinaDer, Juego const& jueg
 void colorFondo(int color);
 void pintaBordeCelda(int fila, Juego const& juego);
 void pintaCentroCelda(int fila, Juego const& juego);
+void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c);
+void posibles_movimientos_inv(Juego const& juego, Movimiento& m);
+int generar_dim_aleatoriamente();
+bool elige_movimiento_inv(Juego const& juego, Movimiento& mov);
+void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov);
 
 const char Horizontal = char(196);
 const char UpperLeft = char(218);
@@ -31,11 +38,10 @@ const int DEFAULT_COLOR = -1;
 // Procedimiento que crea un juego bloqueado con un tablero vacío
 void inicializa(Juego& juego) {
 
-	// Variables
 	Tablero tab;
-
 	// Se bloquea el juego y se añade el tablero
 	juego.estado = Estado(2);
+
 	inicializa(tab);
 	juego.tablero = tab;
 
@@ -326,3 +332,53 @@ void pintaCentroCelda(int fila,Juego const& juego) {
 
 	cout << Vertical << '\n'; // lateral derecho
 }
+
+void generar(Juego& juego, int pasos) {
+	int dim = generar_dim_aleatoriamente();
+	inicializa(juego.tablero, dim, dim, Celda(0));
+	juego.pasos = pasos;//esto es un atributo de prueba
+	int filaM, colM;
+	selecciona_meta_aleatoria(juego, filaM, colM);
+	juego.colMeta = colM;
+	juego.filaMeta = filaM;
+	escribirCelda(juego.tablero, juego.filaMeta, juego.colMeta,Celda(2));
+	mostrar(juego);
+	movimiento_inverso (juego);
+
+
+
+}
+bool movimiento_inverso(Juego& juego) {
+	Movimiento mov;
+	posiblesMovimientos(juego, mov);
+	
+}
+void selecciona_meta_aleatoria(Juego const& juego, int& f, int& c) {
+    int filas = juego.tablero.numFilas;
+    int columnas = juego.tablero.numColumnas;
+    f = rand() % filas;
+    c = rand() % columnas;
+}
+void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c,) {
+	int filas = juego.tablero.numFilas;
+	int columnas = juego.tablero.numColumnas;
+	f = rand() % filas;
+	c = rand() % columnas;
+}
+int generar_dim_aleatoriamente() {
+	int min = 4;
+	int max = 6;
+
+	// Generar un número aleatorio [4, 6]
+	int dimension = rand() % (max - min + 1) + min;
+
+	return dimension;
+}
+
+
+void posibles_movimientos_inv(Juego const& juego, Movimiento& m) {
+	
+
+}
+bool elige_movimiento_inv(Juego const& juego, Movimiento& mov);
+void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov);

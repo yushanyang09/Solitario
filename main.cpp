@@ -16,6 +16,7 @@
 */
 
 #include <iostream>
+#include <ctime>     // Para la semilla 
 #include <fstream>
 #include "tablero.h"
 #include "juego.h"
@@ -28,56 +29,67 @@ Movimiento leerMovimiento(Juego solitario);
 void leerPosicion(int& f, int& c);
 
 int main() {
-
+	// Inicializa la semilla de generación de números aleatorios
+	srand(time(nullptr));
 	// Variables
 	Juego solitario;
     ifstream archivo;
 	Movimiento movimiento;
 	char volver = 'N';
+	char Modo;
+	cout << "Quieres cargar un juego [C] o empezar con uno aleatorio [A]?";
+	cin >> Modo;
+	if (Modo == 'C') {
+		// Gane o pierda, se volvería a iniciar el juego mientras el jugador quiera
+		do {
 
-	// Gane o pierda, se volvería a iniciar el juego mientras el jugador quiera
-	do {
+			// Se inicializa el flujo (necesario para volver a cargar otra partida)
+			archivo = ifstream();
 
-		// Se inicializa el flujo (necesario para volver a cargar otra partida)
-		archivo = ifstream();
+			// Se crear el tablero vacio
+			inicializa(solitario);
 
-		// Se crear el tablero vacio
-		inicializa(solitario);
+			// Se abre el archivo que contiene la información del tablero
+			archivo.open("tablero5x5.txt");
 
-		// Se abre el archivo que contiene la información del tablero
-		archivo.open("tablero4x4.txt");
+			// Se avisa si no se ha encontrado el fichero
+			if (!archivo.is_open()) {
+				cout << "Archivo no encontrado" << endl;
+			}
+			else {
 
-		// Se avisa si no se ha encontrado el fichero
-		if (!archivo.is_open()) {
-			cout << "Archivo no encontrado" << endl;
-		}
-		else {
+				// Se carga el juego
+				if (cargar(solitario, archivo)) {
 
-			// Se carga el juego
-			if (cargar(solitario, archivo)) {
+					// se muestra el estado inicial
+					mostrar(solitario);
 
-				// se muestra el estado inicial
-				mostrar(solitario);
+					// empezamos a jugar
+					do {
+						movimiento = leerMovimiento(solitario);
+						jugar(solitario, movimiento);
+					} while (estado(solitario) == JUGANDO);
 
-				// empezamos a jugar
-				do {
-					movimiento = leerMovimiento(solitario);
-					jugar(solitario, movimiento);
-				} while (estado(solitario) == JUGANDO);
+					// mostrar resultado de la partida (ganador o bloqueo)
+					if (estado(solitario) == GANADOR)
+						cout << "\t\t ! ! HAS GANADO ! ! ";
+					else
+						cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
+					cout << RESET << "\n\n";
+					cout << "Quieres volver a jugar [S/N]? ";
+					cin >> volver;
+				}
 
-				// mostrar resultado de la partida (ganador o bloqueo)
-				if (estado(solitario) == GANADOR)
-					cout << "\t\t ! ! HAS GANADO ! ! ";
-				else
-					cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
-				cout << RESET << "\n\n";
-				cout << "Quieres volver a jugar [S/N]? ";
-				cin >> volver;
 			}
 
-		}
-
-	} while (volver == 'S');
+		} while (volver == 'S');
+	}
+	else if (Modo == 'A') {
+		int pasos;
+		cout << "Indica el numero de pasos para crear el juego aleatorio:";
+		cin >> pasos;
+		generar(solitario, pasos);
+	}
 
 }
 Movimiento leerMovimiento(Juego solitario) {
