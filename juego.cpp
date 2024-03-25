@@ -400,7 +400,7 @@ void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c) {
 
 int generar_dim_aleatoriamente() {
 	int min = 4;
-	int max = 6;
+	int max = 9;
 
 	// Generar un número aleatorio [4, 6]
 	int dimension = rand() % (max - min + 1) + min;
