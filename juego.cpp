@@ -12,6 +12,7 @@ void pintaLinea(char esquinaIzda, char cruce, char esquinaDer, Juego const& jueg
 void colorFondo(int color);
 void pintaBordeCelda(int fila, Juego const& juego);
 void pintaCentroCelda(int fila, Juego const& juego);
+void selecciona_meta_aleatoria(Juego const& juego);
 void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c);
 void posibles_movimientos_inv(Juego const& juego, Movimiento& m);
 int generar_dim_aleatoriamente();
@@ -334,51 +335,108 @@ void pintaCentroCelda(int fila,Juego const& juego) {
 }
 
 void generar(Juego& juego, int pasos) {
+
+	// Variables
+	int numPasos = 0;
+	bool pasoExitoso = true;
 	int dim = generar_dim_aleatoriamente();
+
+	// Generamos el tablero con su meta aleatoria
 	inicializa(juego.tablero, dim, dim, Celda(0));
-	juego.pasos = pasos;//esto es un atributo de prueba
-	int filaM, colM;
-	selecciona_meta_aleatoria(juego, filaM, colM);
-	juego.colMeta = colM;
-	juego.filaMeta = filaM;
-	escribirCelda(juego.tablero, juego.filaMeta, juego.colMeta,Celda(2));
-	mostrar(juego);
-	movimiento_inverso (juego);
+	selecciona_meta_aleatoria(juego);
 
-
+	// Mientras no hayamos realizado los pasos solicitados y sea posible realizarlos, ejecutamos movimientos
+	while (numPasos <= pasos && pasoExitoso) {
+		pasoExitoso = movimiento_inverso(juego);
+		mostrar(juego);
+		numPasos++;
+	}
 
 }
+
+// Función booleana que ejecuta un movimiento inverso si es posible
 bool movimiento_inverso(Juego& juego) {
+
+	// Variables
 	Movimiento mov;
-	posiblesMovimientos(juego, mov);
+	int f, c;
+
+	// Buscamos movimientos inversos
+	do {
+		selecciona_ficha_aleatoria(juego, f, c);
+		posibles_movimientos_inv(juego, mov);
+	} while (!elige_movimiento_inv(juego, mov));
+
+
 	
 }
-void selecciona_meta_aleatoria(Juego const& juego, int& f, int& c) {
-    int filas = juego.tablero.numFilas;
-    int columnas = juego.tablero.numColumnas;
-    f = rand() % filas;
-    c = rand() % columnas;
+
+void selecciona_meta_aleatoria(Juego & juego) {
+	juego.filaMeta = rand() % juego.tablero.numFilas;
+	juego.colMeta = rand() % juego.tablero.numColumnas;
+	escribirCelda(juego.tablero, juego.filaMeta, juego.colMeta, Celda(2));
 }
-void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c,) {
+
+void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c) {
+
 	int filas = juego.tablero.numFilas;
 	int columnas = juego.tablero.numColumnas;
-	f = rand() % filas;
-	c = rand() % columnas;
+
+	// Buscamos una ficha
+	do {
+		f = rand() % filas;
+		c = rand() % columnas;
+	} while (leerCelda(juego.tablero, f, c) != Celda(2));
+
 }
+
 int generar_dim_aleatoriamente() {
 	int min = 4;
-	int max = 6;
+	int max = 9;
 
-	// Generar un número aleatorio [4, 6]
+	// Generar un número aleatorio [4, 9]
 	int dimension = rand() % (max - min + 1) + min;
 
 	return dimension;
 }
 
 
-void posibles_movimientos_inv(Juego const& juego, Movimiento& m) {
-	
+// Procedimiento que completa el movimiento con las direcciones posibles de la ficha
+void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
+
+	// Variables
+	Movimiento movAux;
+	mov.cont = 0;
+
+	// i = 0 -> Arriba
+	// i = 1 -> Abajo
+	// i = 2 -> Izquierda
+	// i = 3 -> Derecha
+	for (int i = 0; i < NumDir; i++) {
+
+		// La siguiente casilla en direccion i NO debe tener una ficha
+		movAux = inicializa(mov.fila + dirs[i].first, mov.columna + dirs[i].second);
+
+		if (leerCelda(juego.tablero, movAux.fila, movAux.columna) != Celda(2)) {
+
+			// La siguiente casilla en dirección i NO debe tener una ficha
+			movAux = inicializa(movAux.fila + dirs[i].first, movAux.columna + dirs[i].second);
+
+			if (leerCelda(juego.tablero, movAux.fila, movAux.columna) != Celda(2)) {
+				mov.direcciones[mov.cont] = Direccion(i);
+				mov.cont++;
+			}
+		}
+	}
+
+	// Si solo hubiese una dirección posible se establece como la activa
+	if (mov.cont == 1)
+		mov.dirActiva = mov.direcciones[0];
 
 }
-bool elige_movimiento_inv(Juego const& juego, Movimiento& mov);
-void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov);
+bool elige_movimiento_inv(Juego const& juego, Movimiento& mov) {
+
+}
+void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov) {
+
+}
