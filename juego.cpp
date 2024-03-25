@@ -12,12 +12,12 @@ void pintaLinea(char esquinaIzda, char cruce, char esquinaDer, Juego const& jueg
 void colorFondo(int color);
 void pintaBordeCelda(int fila, Juego const& juego);
 void pintaCentroCelda(int fila, Juego const& juego);
-void selecciona_meta_aleatoria(Juego const& juego);
 void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c);
 void posibles_movimientos_inv(Juego const& juego, Movimiento& m);
 int generar_dim_aleatoriamente();
 bool elige_movimiento_inv(Juego const& juego, Movimiento& mov);
 void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov);
+void selecciona_meta_aleatoria(Juego& juego);
 
 const char Horizontal = char(196);
 const char UpperLeft = char(218);
@@ -249,7 +249,7 @@ bool hay_ganador(Juego const& juego) {
 bool hay_movimientos(Juego const& juego) {
 	for (int fila = 0; fila < juego.tablero.numFilas; fila++) {
 		for (int columna = 0; columna < juego.tablero.numColumnas; columna++) {
-			if (leerCelda(juego.tablero, fila, columna) == Celda(2)) {
+			if (leerCelda(juego.tablero, fila, columna) == Celda(2) ) {
 				Movimiento mov;
 				mov.fila = fila;
 				mov.columna = columna;
@@ -344,13 +344,12 @@ void generar(Juego& juego, int pasos) {
 	// Generamos el tablero con su meta aleatoria
 	inicializa(juego.tablero, dim, dim, Celda(0));
 	selecciona_meta_aleatoria(juego);
-
 	// Mientras no hayamos realizado los pasos solicitados y sea posible realizarlos, ejecutamos movimientos
 	while (numPasos <= pasos && pasoExitoso) {
 		pasoExitoso = movimiento_inverso(juego);
-		mostrar(juego);
 		numPasos++;
 	}
+	mostrar(juego);
 
 }
 
@@ -360,15 +359,24 @@ bool movimiento_inverso(Juego& juego) {
 	// Variables
 	Movimiento mov;
 	int f, c;
+	bool movEncontrado = false;
+	Movimiento fichActual;
 
-	// Buscamos movimientos inversos
 	do {
 		selecciona_ficha_aleatoria(juego, f, c);
-		posibles_movimientos_inv(juego, mov);
-	} while (!elige_movimiento_inv(juego, mov));
+		fichActual.columna = c;
+		fichActual.fila = f;
+		posibles_movimientos_inv(juego, fichActual);
+		movEncontrado = elige_movimiento_inv(juego, fichActual);
+	} while (!movEncontrado);
 
+	// Devolvemos false si no se encontró ningún movimiento inverso
+	if (!movEncontrado) {
+		return false;
+	}
 
-	
+    ejecuta_movimiento_inv(juego, fichActual);//si se encuentra ejecutamos el movimiento
+    return true;
 }
 
 void selecciona_meta_aleatoria(Juego & juego) {
@@ -392,9 +400,9 @@ void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c) {
 
 int generar_dim_aleatoriamente() {
 	int min = 4;
-	int max = 9;
+	int max = 6;
 
-	// Generar un número aleatorio [4, 9]
+	// Generar un número aleatorio [4, 6]
 	int dimension = rand() % (max - min + 1) + min;
 
 	return dimension;
@@ -417,14 +425,18 @@ void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
 		// La siguiente casilla en direccion i NO debe tener una ficha
 		movAux = inicializa(mov.fila + dirs[i].first, mov.columna + dirs[i].second);
 
-		if (leerCelda(juego.tablero, movAux.fila, movAux.columna) != Celda(2)) {
-
-			// La siguiente casilla en dirección i NO debe tener una ficha
-			movAux = inicializa(movAux.fila + dirs[i].first, movAux.columna + dirs[i].second);
-
+		if (correcta(juego.tablero, movAux.fila, movAux.columna)) {
 			if (leerCelda(juego.tablero, movAux.fila, movAux.columna) != Celda(2)) {
-				mov.direcciones[mov.cont] = Direccion(i);
-				mov.cont++;
+
+				// La siguiente casilla en dirección i NO debe tener una ficha
+				movAux = inicializa(movAux.fila + dirs[i].first, movAux.columna + dirs[i].second);
+
+				if (correcta(juego.tablero, movAux.fila, movAux.columna)) {
+					if (leerCelda(juego.tablero, movAux.fila, movAux.columna) != Celda(2)) {
+						mov.direcciones[mov.cont] = Direccion(i);
+						mov.cont++;
+					}
+				}
 			}
 		}
 	}
@@ -435,8 +447,26 @@ void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
 
 }
 bool elige_movimiento_inv(Juego const& juego, Movimiento& mov) {
-
+	if (mov.cont > 0) {
+		int dir = rand() % mov.cont;
+		mov.dirActiva = mov.direcciones[dir];
+		return true;
+	}
+	else if(mov.cont == 1) {
+		//si solo hubiese una direccion posible, ya lo habiamos añadido a dirActiva en la funcion posibles_mov
+		return true;
+	}
+	else {
+		return false; //no hay movimientos
+	}
 }
 void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov) {
+	// La casilla del movimiento se vacia
+	escribirCelda(juego.tablero, mov.fila, mov.columna, Celda(1));
 
+	// La casilla sobre la que se salta se pone ficha
+	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first, mov.columna + dirs[mov.dirActiva].second, Celda(2));
+
+	// La casilla destino recibe la ficha
+	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first * 2, mov.columna + dirs[mov.dirActiva].second * 2, Celda(2));
 }

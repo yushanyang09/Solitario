@@ -39,6 +39,7 @@ int main() {
 	char Modo;
 	cout << "Quieres cargar un juego [C] o empezar con uno aleatorio [A]?";
 	cin >> Modo;
+	Modo = toupper(Modo);
 	if (Modo == 'C') {
 		// Gane o pierda, se volvería a iniciar el juego mientras el jugador quiera
 		do {
@@ -89,6 +90,20 @@ int main() {
 		cout << "Indica el numero de pasos para crear el juego aleatorio:";
 		cin >> pasos;
 		generar(solitario, pasos);
+		// empezamos a jugar
+		do {
+			movimiento = leerMovimiento(solitario);
+			jugar(solitario, movimiento);
+		} while (estado(solitario) == JUGANDO);
+
+		// mostrar resultado de la partida (ganador o bloqueo)
+		if (estado(solitario) == GANADOR)
+			cout << "\t\t ! ! HAS GANADO ! ! ";
+		else
+			cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
+		cout << RESET << "\n\n";
+		cout << "Quieres volver a jugar [S/N]? ";
+		cin >> volver;
 	}
 
 }

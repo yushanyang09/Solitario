@@ -40,7 +40,7 @@ int numColumnas(Tablero const& tab) {
 }
 
 bool correcta(Tablero const& tab, int f, int c) {
-	return (f >= 0 && f < tab.numFilas) && (c >= 0 && c < tab.numColumnas);
+	return (f >= 0 && f <= tab.numFilas) && (c >= 0 && c <= tab.numColumnas);
 }
 Celda leerCelda(Tablero const& tab, int f, int c) {
 	return tab.celdas[f][c];

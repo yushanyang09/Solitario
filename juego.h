@@ -11,7 +11,6 @@ struct Juego {
 	int filaMeta, colMeta;
 	Tablero tablero;
 	Estado estado;
-	int pasos;
 	
 };
 
