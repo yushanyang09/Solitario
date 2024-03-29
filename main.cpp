@@ -98,8 +98,10 @@ int main() {
 		} while (estado(solitario) == JUGANDO);
 
 		// mostrar resultado de la partida (ganador o bloqueo)
-		if (estado(solitario) == GANADOR)
+		if (estado(solitario) == GANADOR) {
+			cout << RED;
 			cout << "\t\t ! ! HAS GANADO ! ! ";
+		}
 		else
 			cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
 		cout << RESET << "\n\n";
