@@ -102,8 +102,10 @@ int main() {
 			cout << RED;
 			cout << "\t\t ! ! HAS GANADO ! ! ";
 		}
-		else
+		else {
+			cout << RED;
 			cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
+		}
 		cout << RESET << "\n\n";
 		cout << "Quieres volver a jugar [S/N]? ";
 		cin >> volver;
