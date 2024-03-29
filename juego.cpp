@@ -140,12 +140,11 @@ void jugar(Juego& juego, Movimiento const& mov) {
 	posiblesMovimientos(juego, movPosibles);
 
 	// Casos especiales
-	// No tiene ninguna dirección posible
-	if (numDirs(movPosibles) == 0) {
-		cout << endl;
-		cout << "Esa ficha no se puede mover"<<endl;
-	} // Solo tiene una dirección posible
-	else if (numDirs(movPosibles) == 1) {
+	if (leerCelda(juego.tablero, fila(mov), columna(mov)) != Celda(2))
+		cout << "\nCelda incorrecta o sin ficha\n";
+	else if (numDirs(movPosibles) == 0) // No tiene ninguna dirección posible
+		cout << "\nEsa ficha no se puede mover\n";
+	else if (numDirs(movPosibles) == 1) { // Solo tiene una dirección posible
 		ejecuta_movimiento(juego, movPosibles);
 		mostrar(juego);
 	} // Tiene varias opciones
