@@ -109,6 +109,7 @@ int main() {
 	}
 
 }
+//Funcion que se encarga de leer los movimientos del usuario
 Movimiento leerMovimiento(Juego solitario) {
 
     cout << "Selecciona una FICHA (fila y columna):";
@@ -118,6 +119,7 @@ Movimiento leerMovimiento(Juego solitario) {
     return mov;
 
 }
+//funcion que se encarga de leer la fila y columna elegida del jugador
 void leerPosicion(int& f, int& c) {
     cin >> f >> c;
 	f--;
