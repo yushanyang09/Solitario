@@ -86,6 +86,7 @@ int main() {
 		} while (volver == 'S');
 	}
 	else if (Modo == 'A') {
+	  do{
 		int pasos;
 		cout << "Indica el numero de pasos para crear el juego aleatorio:";
 		cin >> pasos;
@@ -104,6 +105,7 @@ int main() {
 		cout << RESET << "\n\n";
 		cout << "Quieres volver a jugar [S/N]? ";
 		cin >> volver;
+	  } while (volver == 'S' || volver == 's');
 	}
 
 }
