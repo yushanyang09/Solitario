@@ -105,23 +105,22 @@ void posiblesMovimientos(Juego const& juego, Movimiento& mov) {
 	for (int i = 0; i < NumDir; i++) {
 
 		// La siguiente casilla en direccion i debe tener una ficha
-		movAux = inicializa(mov.fila + dirs[i].first, mov.columna + dirs[i].second);
+		movAux = inicializa(fila(mov) + dirs[i].first, columna(mov) + dirs[i].second);
 
-		if (leerCelda(juego.tablero, movAux.fila, movAux.columna) == Celda(2)) {
+		if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) == Celda(2)) {
 
 			// La siguiente casilla en dirección i debe estar vacía
-			movAux = inicializa(movAux.fila + dirs[i].first, movAux.columna + dirs[i].second);
+			movAux = inicializa(fila(movAux) + dirs[i].first, columna(movAux) + dirs[i].second);
 
-			if (leerCelda(juego.tablero, movAux.fila, movAux.columna) == Celda(1)) {
-				mov.direcciones[mov.cont] = Direccion(i);
-				mov.cont++;
+			if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) == Celda(1)) {
+				insertarDireccion(mov, Direccion(i));
 			}
 		}
 	}
 
 	// Si solo hubiese una dirección posible se establece como la activa
-	if (mov.cont == 1)
-		mov.dirActiva = mov.direcciones[0];
+	if (numDirs(mov) == 1)
+		fijarDireccionActiva(mov, mov.direcciones[0]);
 
 }
 
@@ -142,11 +141,11 @@ void jugar(Juego& juego, Movimiento const& mov) {
 
 	// Casos especiales
 	// No tiene ninguna dirección posible
-	if (movPosibles.cont == 0) {
+	if (numDirs(movPosibles) == 0) {
 		cout << endl;
 		cout << "Esa ficha no se puede mover"<<endl;
 	} // Solo tiene una dirección posible
-	else if (movPosibles.cont == 1) {
+	else if (numDirs(movPosibles) == 1) {
 		ejecuta_movimiento(juego, movPosibles);
 		mostrar(juego);
 	} // Tiene varias opciones
@@ -156,12 +155,12 @@ void jugar(Juego& juego, Movimiento const& mov) {
 		do {
 
 			cout << "Selecciona direccion:\n";
-			for (int i = 1; i <= movPosibles.cont; i++) {
+			for (int i = 1; i <= numDirs(movPosibles); i++) {
 				cout << "\t" << i << " - " << toString(movPosibles.direcciones[i-1]) << '\n';
 			}
 			cin >> opcion;
 
-			if (opcion < 1 || opcion > movPosibles.cont)
+			if (opcion < 1 || opcion > numDirs(movPosibles))
 				cout << "Direccion invalida\n";
 			else {
 				fijarDireccionActiva(movPosibles, movPosibles.direcciones[opcion-1]);
@@ -169,7 +168,7 @@ void jugar(Juego& juego, Movimiento const& mov) {
 				mostrar(juego);
 			}
 
-		} while (opcion < 1 || opcion > movPosibles.cont);
+		} while (opcion < 1 || opcion > numDirs(movPosibles));
 
 	}
 
@@ -188,7 +187,7 @@ void mostrar(Juego const& juego) {
 	pintaLinea(UpperLeft, UpperCross, UpperRight,juego);
 
 	// para cada fila
-	for (int fil = 0; fil < juego.tablero.numFilas; fil++) {
+	for (int fil = 0; fil < numFilas(juego.tablero); fil++) {
 		if (fil == juego.filaMeta) {
 
 		}
@@ -199,7 +198,7 @@ void mostrar(Juego const& juego) {
 		// tercera línea
 		pintaBordeCelda(fil,juego);
 		// separación entre filas
-		if (fil <juego.tablero.numFilas - 1)
+		if (fil < numFilas(juego.tablero) - 1)
 			pintaLinea(MidLeft, MidCross, MidRight,juego);
 		else
 			pintaLinea(LowerLeft, LowerCross, LowerRight,juego);
@@ -214,13 +213,13 @@ void mostrar(Juego const& juego) {
 void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 
 	// La casilla del movimiento se vacia
-	escribirCelda(juego.tablero, mov.fila, mov.columna, Celda(1));
+	escribirCelda(juego.tablero, fila(mov), columna(mov), Celda(1));
 
 	// La casilla sobre la que se salta se vacia
-	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first, mov.columna + dirs[mov.dirActiva].second, Celda(1));
+	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first, columna(mov) + dirs[mov.dirActiva].second, Celda(1));
 
 	// La casilla destino recibe la fichaa
-	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first * 2, mov.columna + dirs[mov.dirActiva].second * 2, Celda(2));
+	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first * 2, columna(mov) + dirs[mov.dirActiva].second * 2, Celda(2));
 
 }
 
@@ -245,8 +244,8 @@ bool hay_ganador(Juego const& juego) {
 	bool victoria = false;
 
 	// Se recorre el tablero entero en búsqueda de fichas y se cuentan
-	for (int i = 0; i < juego.tablero.numFilas; i++) {
-		for (int j = 0; j < juego.tablero.numColumnas; j++) {
+	for (int i = 0; i < numFilas(juego.tablero); i++) {
+		for (int j = 0; j < numColumnas(juego.tablero); j++) {
 			if (leerCelda(juego.tablero,i,j) == FICHA) {
 				num_fichas++;
 			}
@@ -274,10 +273,10 @@ bool hay_movimientos(Juego const& juego) {
 	int fila = 0, columna;
 
 	// Se recorre el tablero en búsqueda de alguna ficha con al menos un movimiento
-	while (fila < juego.tablero.numFilas && !existen) {
+	while (fila < numFilas(juego.tablero) && !existen) {
 
 		columna = 0;
-		while (columna < juego.tablero.numColumnas && !existen) {
+		while (columna < numColumnas(juego.tablero) && !existen) {
 
 			if (leerCelda(juego.tablero, fila, columna) == Celda(2) ) {
 				mov = inicializa(fila, columna);
@@ -286,7 +285,7 @@ bool hay_movimientos(Juego const& juego) {
 				posiblesMovimientos(juego, mov);
 
 				// Si hay al menos un movimiento posible
-				if (mov.cont > 0) {
+				if (numDirs(mov) > 0) {
 					existen = true;
 				}
 			}
@@ -303,7 +302,7 @@ void pintaCabecera(Juego const& juego) {
 	cout << setw(2) << "    "; // margen inicial
 	cout << setw(5) << 1;
 
-	for (int i = 2; i <= juego.tablero.numColumnas; i++)
+	for (int i = 2; i <= numColumnas(juego.tablero); i++)
 		cout << setw(7) << i;
 
 	cout << '\n';
@@ -313,7 +312,7 @@ void pintaLinea(char esquinaIzda, char cruce, char esquinaDer, Juego const& jueg
 	cout << "    "; // margen inicial
 	cout << esquinaIzda;
 
-	for (int i = 0; i < juego.tablero.numColumnas - 1; i++)
+	for (int i = 0; i < numColumnas(juego.tablero) - 1; i++)
 		cout << string(6, Horizontal) << cruce;
 
 	cout << string(6, Horizontal) << esquinaDer << '\n';
@@ -333,7 +332,7 @@ void colorFondo(int color) {
 void pintaBordeCelda(int fila,Juego const& juego) {
 	cout << "    "; // margen inicial
 
-	for (int k = 0; k < juego.tablero.numColumnas; k++) { // cada columna
+	for (int k = 0; k < numColumnas(juego.tablero); k++) { // cada columna
 		cout << Vertical;
 		colorFondo(juego.tablero.celdas[fila][k]);
 		cout << "      ";
@@ -346,7 +345,7 @@ void pintaBordeCelda(int fila,Juego const& juego) {
 void pintaCentroCelda(int fila,Juego const& juego) {
 	cout << "  " << setw(2) << fila + 1; // margen inicial
 
-	for (int k = 0; k < juego.tablero.numColumnas; k++) { // cada columna
+	for (int k = 0; k < numColumnas(juego.tablero); k++) { // cada columna
 		cout << Vertical;
 		// el color de fondo depende del contenido
 		colorFondo(juego.tablero.celdas[fila][k]);
@@ -395,27 +394,24 @@ bool movimiento_inverso(Juego& juego) {
 	bool movEncontrado = false;
 	Movimiento fichActual;
 
-	do {
-		selecciona_ficha_aleatoria(juego, f, c);
-		fichActual.columna = c;
-		fichActual.fila = f;
-		posibles_movimientos_inv(juego, fichActual);
-		movEncontrado = elige_movimiento_inv(juego, fichActual);
-	} while (!movEncontrado);
+	// Seleccionamos una ficha, buscamos sus posibles movimientos inversos y escogemos uno, de forma aleatoria
+	selecciona_ficha_aleatoria(juego, f, c);
+	fichActual.columna = c;
+	fichActual.fila = f;
+	posibles_movimientos_inv(juego, fichActual);
+	movEncontrado = elige_movimiento_inv(juego, fichActual);
 
 	// Devolvemos false si no se encontró ningún movimiento inverso
-	if (!movEncontrado) {
-		return false;
-	}
+	if (movEncontrado)
+		ejecuta_movimiento_inv(juego, fichActual);//si se encuentra ejecutamos el movimiento
 
-    ejecuta_movimiento_inv(juego, fichActual);//si se encuentra ejecutamos el movimiento
-    return true;
+    return movEncontrado;
 }
 
 // Procedimiento que se encarga de establecer la meta del juego aleatoriamente
 void selecciona_meta_aleatoria(Juego & juego) {
-	juego.filaMeta = rand() % juego.tablero.numFilas;
-	juego.colMeta = rand() % juego.tablero.numColumnas;
+	juego.filaMeta = rand() % numFilas(juego.tablero);
+	juego.colMeta = rand() % numColumnas(juego.tablero);
 	escribirCelda(juego.tablero, juego.filaMeta, juego.colMeta, Celda(2));
 }
 
@@ -423,8 +419,8 @@ void selecciona_meta_aleatoria(Juego & juego) {
 void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c) {
 
 	// Variables
-	int filas = juego.tablero.numFilas;
-	int columnas = juego.tablero.numColumnas;
+	int filas = numFilas(juego.tablero);
+	int columnas = numColumnas(juego.tablero);
 
 	// Buscamos una ficha
 	do {
@@ -463,18 +459,17 @@ void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
 	for (int i = 0; i < NumDir; i++) {
 
 		// La siguiente casilla en direccion i NO debe tener una ficha
-		movAux = inicializa(mov.fila + dirs[i].first, mov.columna + dirs[i].second);
+		movAux = inicializa(fila(mov) + dirs[i].first, columna(mov) + dirs[i].second);
 
-		if (correcta(juego.tablero, movAux.fila, movAux.columna)) {
-			if (leerCelda(juego.tablero, movAux.fila, movAux.columna) != Celda(2)) {
+		if (correcta(juego.tablero, fila(movAux), columna(movAux))) {
+			if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) != Celda(2)) {
 
 				// La siguiente casilla en dirección i NO debe tener una ficha
-				movAux = inicializa(movAux.fila + dirs[i].first, movAux.columna + dirs[i].second);
+				movAux = inicializa(fila(movAux) + dirs[i].first, columna(movAux) + dirs[i].second);
 
-				if (correcta(juego.tablero, movAux.fila, movAux.columna)) {
-					if (leerCelda(juego.tablero, movAux.fila, movAux.columna) != Celda(2)) {
-						mov.direcciones[mov.cont] = Direccion(i);
-						mov.cont++;
+				if (correcta(juego.tablero, fila(movAux), columna(movAux))) {
+					if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) != Celda(2)) {
+						insertarDireccion(mov, Direccion(i));
 					}
 				}
 			}
@@ -482,8 +477,8 @@ void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
 	}
 
 	// Si solo hubiese una dirección posible se establece como la activa
-	if (mov.cont == 1)
-		mov.dirActiva = mov.direcciones[0];
+	if (numDirs(mov))
+		fijarDireccionActiva(mov, mov.direcciones[0]);
 
 }
 
@@ -492,9 +487,9 @@ bool elige_movimiento_inv(Juego const& juego, Movimiento& mov) {
 
 	// Variables
 	bool movimientos = true;
-	if (mov.cont > 0) {
-		int dir = rand() % mov.cont;
-		mov.dirActiva = mov.direcciones[dir];
+	if (numDirs(mov) > 0) {
+		int dir = rand() % numDirs(mov);
+		fijarDireccionActiva(mov, mov.direcciones[dir]);
 	}
 	else {
 		movimientos = false; //no hay movimientos
@@ -507,11 +502,11 @@ bool elige_movimiento_inv(Juego const& juego, Movimiento& mov) {
 // Procedimiento que se encarga de cambiar el estado de las celdas al ejecutar un movimiento inverso
 void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov) {
 	// La casilla del movimiento se vacia
-	escribirCelda(juego.tablero, mov.fila, mov.columna, Celda(1));
+	escribirCelda(juego.tablero, fila(mov), columna(mov), Celda(1));
 
 	// La casilla sobre la que se salta se pone ficha
-	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first, mov.columna + dirs[mov.dirActiva].second, Celda(2));
+	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first, columna(mov) + dirs[mov.dirActiva].second, Celda(2));
 
 	// La casilla destino recibe la ficha
-	escribirCelda(juego.tablero, mov.fila + dirs[mov.dirActiva].first * 2, mov.columna + dirs[mov.dirActiva].second * 2, Celda(2));
+	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first * 2, columna(mov) + dirs[mov.dirActiva].second * 2, Celda(2));
 }
