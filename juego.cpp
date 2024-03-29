@@ -3,9 +3,11 @@
 #include "tablero.h"
 #include <iomanip>
 #include <cstdlib>   // Para la función rand()
-#include <ctime>     // Para la semilla 
-#include <set>
+#include <ctime>     // Para la semilla
+
 using namespace std;
+
+// PROTOTIPOS
 void mostrar(Juego const& juego);
 void pintaCabecera(Juego const& juego);
 void pintaLinea(char esquinaIzda, char cruce, char esquinaDer, Juego const& juego);
@@ -19,6 +21,7 @@ bool elige_movimiento_inv(Juego const& juego, Movimiento& mov);
 void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov);
 void selecciona_meta_aleatoria(Juego& juego);
 
+// CONSTANTES
 const char Horizontal = char(196);
 const char UpperLeft = char(218);
 const char UpperCross = char(194);
@@ -92,8 +95,9 @@ void posiblesMovimientos(Juego const& juego, Movimiento& mov) {
 
 	// Variables
 	Movimiento movAux;
-	mov.cont = 0;
 
+	// Comprobaremos cada tipo de movimiento y añadiremos los posibles
+	mov.cont = 0;
 	// i = 0 -> Arriba
 	// i = 1 -> Abajo
 	// i = 2 -> Izquierda
@@ -121,6 +125,7 @@ void posiblesMovimientos(Juego const& juego, Movimiento& mov) {
 
 }
 
+// Función que devuelve el tipo estado del juego
 Estado estado(Juego const& juego) {
 	return juego.estado;
 }
@@ -163,15 +168,17 @@ void jugar(Juego& juego, Movimiento const& mov) {
 				ejecuta_movimiento(juego, movPosibles);
 				mostrar(juego);
 			}
+
 		} while (opcion < 1 || opcion > movPosibles.cont);
 
-
-
 	}
+
+	// Se actualiza el estado del juego
 	nuevo_estado(juego);
 
 }
 
+// Procedimiento que se encarga de mostrar el tablero
 void mostrar(Juego const& juego) {
     system("cls"); // borrar consola (clear en Linux)
 	cout << RESET;
@@ -202,6 +209,8 @@ void mostrar(Juego const& juego) {
 }
 
 // Privadas
+
+// Procedimiento que se encarga de ejecutar un movimiento, es decir, de actualizar el contenido de las casillas afectadas
 void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 
 	// La casilla del movimiento se vacia
@@ -215,6 +224,7 @@ void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 
 }
 
+// Procedimiento que se encarga de actualizar el estado del juego
 void nuevo_estado(Juego& juego) {
 	if (hay_ganador(juego)){
 		juego.estado = Estado(1);
@@ -227,9 +237,14 @@ void nuevo_estado(Juego& juego) {
 	}
 }
 
+// Función booleana en función de la victoria del jugador, es decir, cuando solo quede una ficha y sea la meta
 bool hay_ganador(Juego const& juego) {
-	int num_fichas = 0;
 
+	// Variables
+	int num_fichas = 0;
+	bool victoria = false;
+
+	// Se recorre el tablero entero en búsqueda de fichas y se cuentan
 	for (int i = 0; i < juego.tablero.numFilas; i++) {
 		for (int j = 0; j < juego.tablero.numColumnas; j++) {
 			if (leerCelda(juego.tablero,i,j) == FICHA) {
@@ -237,38 +252,53 @@ bool hay_ganador(Juego const& juego) {
 			}
 		}
 	}
+
+	// Si solo quedó una ficha y es la meta el jugador ganó
 	if (num_fichas == 1) {
 		if (leerCelda(juego.tablero, juego.filaMeta, juego.colMeta) == Celda(2)) {
-			return true;
+			victoria = true;
 		}
 	}
-	return false;
+
+	return victoria;
 	
 }
 
+
+// Función booleana en función de la existencia de posibles movimientos de cualquier ficha en el tablero
 bool hay_movimientos(Juego const& juego) {
-	for (int fila = 0; fila < juego.tablero.numFilas; fila++) {
-		for (int columna = 0; columna < juego.tablero.numColumnas; columna++) {
+
+	// Variables
+	Movimiento mov;
+	bool existen = false;
+	int fila = 0, columna;
+
+	// Se recorre el tablero en búsqueda de alguna ficha con al menos un movimiento
+	while (fila < juego.tablero.numFilas && !existen) {
+
+		columna = 0;
+		while (columna < juego.tablero.numColumnas && !existen) {
+
 			if (leerCelda(juego.tablero, fila, columna) == Celda(2) ) {
-				Movimiento mov;
-				mov.fila = fila;
-				mov.columna = columna;
-				mov.cont = 0;
+				mov = inicializa(fila, columna);
 
 				// Calcular los posibles movimientos desde esta celda
 				posiblesMovimientos(juego, mov);
 
 				// Si hay al menos un movimiento posible
 				if (mov.cont > 0) {
-					return true;
+					existen = true;
 				}
 			}
+			columna++;
 		}
+		fila++;
 	}
-	return false;
+
+	return existen;
 
 }
-
+// PROCEDIMIENTOS ENCARGADOS DE PINTAR EL TABLERO
 void pintaCabecera(Juego const& juego) {
 	cout << setw(2) << "    "; // margen inicial
 	cout << setw(5) << 1;
@@ -334,6 +364,9 @@ void pintaCentroCelda(int fila,Juego const& juego) {
 	cout << Vertical << '\n'; // lateral derecho
 }
 
+// PROCEDIMIENTOS Y FUNCIONES PARA LA GENERACIÓN INVERSA DEL TABLERO
+
+// Procedimiento que se encarga de generar el tablero
 void generar(Juego& juego, int pasos) {
 
 	// Variables
@@ -379,14 +412,17 @@ bool movimiento_inverso(Juego& juego) {
     return true;
 }
 
+// Procedimiento que se encarga de establecer la meta del juego aleatoriamente
 void selecciona_meta_aleatoria(Juego & juego) {
 	juego.filaMeta = rand() % juego.tablero.numFilas;
 	juego.colMeta = rand() % juego.tablero.numColumnas;
 	escribirCelda(juego.tablero, juego.filaMeta, juego.colMeta, Celda(2));
 }
 
+// Procedimiento que se encarga de buscar una ficha en el tablero aleatoriamente
 void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c) {
 
+	// Variables
 	int filas = juego.tablero.numFilas;
 	int columnas = juego.tablero.numColumnas;
 
@@ -398,12 +434,16 @@ void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c) {
 
 }
 
+// Función que genera las dimensiones del tablero aleatoriamente y la devuelve
 int generar_dim_aleatoriamente() {
+
+	// Variables
 	int min = 4;
 	int max = 9;
+	int dimension;
 
 	// Generar un número aleatorio [4, 6]
-	int dimension = rand() % (max - min + 1) + min;
+	dimension = rand() % (max - min + 1) + min;
 
 	return dimension;
 }
@@ -446,20 +486,25 @@ void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
 		mov.dirActiva = mov.direcciones[0];
 
 }
+
+// Función booleana que elige la direccción de un movimiento de forma aleatoria, si es que hay. Devuelve su exito o false si no había movimientos
 bool elige_movimiento_inv(Juego const& juego, Movimiento& mov) {
+
+	// Variables
+	bool movimientos = true;
 	if (mov.cont > 0) {
 		int dir = rand() % mov.cont;
 		mov.dirActiva = mov.direcciones[dir];
-		return true;
-	}
-	else if(mov.cont == 1) {
-		//si solo hubiese una direccion posible, ya lo habiamos añadido a dirActiva en la funcion posibles_mov
-		return true;
 	}
 	else {
-		return false; //no hay movimientos
+		movimientos = false; //no hay movimientos
 	}
+
+	return movimientos;
+
 }
+
+// Procedimiento que se encarga de cambiar el estado de las celdas al ejecutar un movimiento inverso
 void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov) {
 	// La casilla del movimiento se vacia
 	escribirCelda(juego.tablero, mov.fila, mov.columna, Celda(1));
