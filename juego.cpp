@@ -44,7 +44,7 @@ void inicializa(Juego& juego) {
 
 	Tablero tab;
 	// Se bloquea el juego y se añade el tablero
-	juego.estado = Estado(2);
+	juego.estado = BLOQUEO;
 
 	inicializa(tab);
 	juego.tablero = tab;
@@ -65,9 +65,27 @@ bool cargar(Juego&/*sal*/ juego, istream&/*ent/sal*/ entrada) {
 	entrada >> juego.filaMeta >> juego.colMeta;
 
 	// Se establece el estado del juego
-	juego.estado = Estado(0);
+	juego.estado = JUGANDO;
 
 	return todoCorrecto;
+}
+
+// Función que da valor al juego a partir del contenido del flujo de entrada.
+// Primero se construye el tablero, luego se fija la meta y se establece el estado jugando.
+bool cargar2(Juego&/*sal*/ juego, istream&/*ent/sal*/ entrada) {
+
+	// Se construye el tablero
+	if (cargar(juego.tablero, entrada)){
+
+		// Se lee e inserta la meta
+		entrada >> juego.filaMeta >> juego.colMeta;
+
+		// Se establece el estado del juego
+		juego.estado = JUGANDO;
+		return true;
+	}
+
+	return false;
 }
 
 // Función booleana en cuanto a posición correcta y con ficha

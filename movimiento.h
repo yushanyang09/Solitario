@@ -22,10 +22,7 @@ struct Movimiento {
 };
 
 Movimiento inicializa(int f, int c);
-
 void insertarDireccion(Movimiento& m, Direccion d);
-
-// d pertece a direcciones[0..cont)
 void fijarDireccionActiva(Movimiento& m, Direccion d);
 
 int fila(Movimiento const& m);
