@@ -2,7 +2,6 @@
 #define TABLERO_H
 
 #include <iostream>
-#include <fstream>
 using namespace std;
 
 enum Celda { NULA, VACIA, FICHA };

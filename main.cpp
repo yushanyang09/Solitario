@@ -72,17 +72,9 @@ int main() {
                         jugar(solitario, movimiento);
                     } while (estado(solitario) == JUGANDO);
 
-                    // mostrar resultado de la partida (ganador o bloqueo)
-                    if (estado(solitario) == GANADOR)
-                        cout << "\t\t ! ! HAS GANADO ! ! ";
-                    else
-                        cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
-                    cout << "\n\n";
-                    cout << "Quieres volver a jugar [S/N]? ";
-                    cin >> volver;
                 }
             }
-        } while (!archivo.is_open() || volver=='S');
+        } while (!archivo.is_open());
     }
     else if (Modo == 'A') {
         do {
