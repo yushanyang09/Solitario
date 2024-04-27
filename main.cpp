@@ -1,20 +1,4 @@
 
-/*
-* Este es un ejemplo de cómo pintar un tablero constante
-* con el mismo formato que aparece en el enunciado de la
-* práctica.
-
-* Los subprogramas que aparecen a continuación hacen uso de
-* varias constantes, para el tablero y sus dimensiones,
-* o la posición de la meta.
-
-* En la práctica, esos subprogramas seguramente pertenezcan a
-* un módulo con acceso a esos datos del juego que no serán
-* constantes.
-*
-* Y necesitarán parámetro(s).
-*/
-
 #include <iostream>
 #include <ctime>     // Para la semilla 
 #include <fstream>
@@ -31,8 +15,6 @@ void leerPosicion(int& f, int& c);
 int main() {
     // Inicializa la semilla de generación de números aleatorios
     srand(time(nullptr));
-
-    // Variables
     Juego solitario;
     ifstream archivo;
     Movimiento movimiento;
@@ -51,6 +33,7 @@ int main() {
             archivo.open(nombreArchivo);
                 if (cargar(solitario, archivo)) {
                     // se muestra el estado inicial
+                    archivo.close();
                     mostrar(solitario);
 
                     // empezamos a jugar
@@ -85,8 +68,6 @@ int main() {
             cin >> volver;
         } while (volver == 'S' || volver == 's');
     }
-
-    return 0;
 
 }
 

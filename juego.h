@@ -3,7 +3,6 @@
 
 #include "tablero.h"
 #include "movimiento.h"
-using namespace std;
 
 enum Estado { JUGANDO, GANADOR, BLOQUEO };
 
@@ -21,7 +20,6 @@ bool posicionValida(Juego const& juego, int f, int c);
 void posiblesMovimientos(Juego const& juego, Movimiento& mov);
 Estado estado(Juego const& juego);
 void jugar(Juego& juego, Movimiento const& mov);
-void mostrar(Juego const& juego);
 
 // Privadas
 void ejecuta_movimiento(Juego& juego, Movimiento const& mov);

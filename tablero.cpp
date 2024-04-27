@@ -25,8 +25,6 @@ bool cargar(Tablero&/*sal*/ tab, istream&/*ent/sal*/ entrada) {
 	int valor;
 	bool cargado = true;
 
-	entrada >> tab.numFilas>> tab.numColumnas;
-
 	if (!(entrada >> tab.numFilas && entrada >> tab.numColumnas))
 		cargado=false;
 
