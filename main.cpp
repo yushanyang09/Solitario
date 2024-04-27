@@ -38,30 +38,17 @@ int main() {
     Movimiento movimiento;
     char volver = 'N';
     char Modo;
-
     cout << "Quieres cargar un juego [C] o empezar con uno aleatorio [A]? ";
     cin >> Modo;
     Modo = toupper(Modo);
 
     if (Modo == 'C') {
-        // Gane o pierda, se volvería a iniciar el juego mientras el jugador quiera
         do {
-            // Se inicializa el flujo (necesario para volver a cargar otra partida)
-            archivo.close(); // Cerrar el archivo anterior antes de abrir uno nuevo
-
-            // Se crear el tablero vacio
             inicializa(solitario);
             string nombreArchivo;
             cout << "Introduzca el nombre del archivo del tablero: ";
             cin >> nombreArchivo;
-
-            // Se abre el archivo que contiene la información del tablero
             archivo.open(nombreArchivo);
-
-            if (!archivo.is_open()) {
-                cout << "Archivo no encontrado" << endl;
-            }
-            else {
                 if (cargar(solitario, archivo)) {
                     // se muestra el estado inicial
                     mostrar(solitario);
@@ -71,9 +58,9 @@ int main() {
                         movimiento = leerMovimiento(solitario);
                         jugar(solitario, movimiento);
                     } while (estado(solitario) == JUGANDO);
-
                 }
-            }
+ 
+  
         } while (!archivo.is_open());
     }
     else if (Modo == 'A') {
@@ -100,7 +87,10 @@ int main() {
     }
 
     return 0;
+
 }
+
+
 //Funcion que se encarga de leer los movimientos del usuario
 Movimiento leerMovimiento(Juego solitario) {
 
@@ -117,3 +107,4 @@ void leerPosicion(int& f, int& c) {
 	f--;
 	c--;
 }
+

@@ -1,5 +1,6 @@
 #include "tablero.h"
 using namespace std;
+Celda asignarValorACelda(int valor);
 
 // Procedimiento que se encarga de construir el tablero y sus atributos con los valores pasados por parámetro
 void inicializa(Tablero& tab, int fil, int col, Celda inicial) {
@@ -21,19 +22,16 @@ void inicializa(Tablero& tab) {
 
 // Función booleana que trata de carga el tablero desde el flujo de entrada pasado por parámetro
 bool cargar(Tablero&/*sal*/ tab, istream&/*ent/sal*/ entrada) {
-
-	// Variables
 	int valor;
 	bool cargado = true;
 
-	// Primero se leen las dimensiones del tablero
-	entrada >> tab.numFilas >> tab.numColumnas;
+	if(!(entrada >> tab.numFilas >> tab.numColumnas)) return false;
 
 	// Y se procede leer casilla por casilla los valores de estas
 	for (int i = 0; i < tab.numFilas; i++) {
 		for (int j = 0; j < tab.numColumnas; j++) {
 			entrada >> valor;
-			escribirCelda(tab, i, j, Celda(valor));
+			escribirCelda(tab, i, j, asignarValorACelda(valor));
 		}
 	}
 
@@ -65,3 +63,21 @@ Celda leerCelda(Tablero const& tab, int f, int c) {
 void escribirCelda(Tablero& tab, int f, int c, Celda valor) {
 	tab.celdas[f][c] = valor;
 }
+
+
+Celda asignarValorACelda(int valor) {
+	Celda celda = NULA;
+	switch (valor) {
+	case 0:
+		celda=NULA;
+		break;
+	case 1:
+		celda=VACIA;
+		break;
+	case 2:
+		celda = FICHA;
+		break;
+	}
+	return celda;
+}
+
