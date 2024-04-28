@@ -6,6 +6,7 @@ using namespace std;
 void inicializa(Tablero& tab, int fil, int col, Celda inicial) {
 	tab.numColumnas = col;
 	tab.numFilas = fil;
+	tab.numFichas = 0;
 	for (int i = 0; i < tab.numFilas; i++) {
 		for (int j = 0; j < tab.numColumnas; j++) {
 			tab.celdas[i][j] = inicial;
@@ -18,6 +19,7 @@ void inicializa(Tablero& tab, int fil, int col, Celda inicial) {
 void inicializa(Tablero& tab) {
 	tab.numColumnas = 0;
 	tab.numFilas = 0;
+	tab.numFichas = 0;
 }
 
 // Función booleana que trata de carga el tablero desde el flujo de entrada pasado por parámetro
@@ -33,6 +35,8 @@ bool cargar(Tablero&/*sal*/ tab, istream&/*ent/sal*/ entrada) {
 		for (int j = 0; j < tab.numColumnas; j++) {
 			entrada >> valor;
 			escribirCelda(tab, i, j, Celda(valor));
+			if (leerCelda(tab, i, j) == FICHA)
+				IncrementNumFichas(tab);
 		}
 	}
 
@@ -63,4 +67,15 @@ Celda leerCelda(Tablero const& tab, int f, int c) {
 // Procedimiento que se encarga de instanciar el contenido de una casilla del tablero con la Celda pasada por parámetro
 void escribirCelda(Tablero& tab, int f, int c, Celda valor) {
 	tab.celdas[f][c] = valor;
+}
+
+// Función que devuelve el número de fichas del tablero
+int numFichas(Tablero const& tab) {
+	return tab.numFichas;
+}
+void IncrementNumFichas(Tablero& tab) {
+	tab.numFichas++;
+}
+void DecrementNumFichas(Tablero& tab) {
+	tab.numFichas--;
 }

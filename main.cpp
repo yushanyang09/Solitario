@@ -25,7 +25,6 @@ int main() {
     Modo = toupper(Modo);
 
     if (Modo == 'C') {
-        do {
             inicializa(solitario);
             string nombreArchivo;
             cout << "Introduzca el nombre del archivo del tablero: ";
@@ -40,11 +39,11 @@ int main() {
                     do {
                         movimiento = leerMovimiento(solitario);
                         jugar(solitario, movimiento);
+                        if (estado(solitario) == GANADOR) cout << "HAS GANADO " << endl;
                     } while (estado(solitario) == JUGANDO);
                 }
  
-  
-        } while (!archivo.is_open());
+              
     }
     else if (Modo == 'A') {
         do {

@@ -33,6 +33,7 @@ Movimiento inicializa(int f, int c) {
 	mov.fila = f;
 	mov.columna = c;
 	mov.cont = 0;
+    mov.dirActiva = INDETERMINADA;
 
 	return mov;
 }

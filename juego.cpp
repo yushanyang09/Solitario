@@ -1,27 +1,33 @@
 #include "juego.h"
 #include "tablero.h"
+#include "movimiento.h"
 #include "colores.h"
 #include <cstdlib>   // Para la función rand()
 #include <ctime>     // Para la semilla
 
 using namespace std;
 
-void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c);
+pair<int,int> selecciona_ficha_aleatoria(Juego const& juego);
 void posibles_movimientos_inv(Juego const& juego, Movimiento& m);
-int generar_dim_aleatoriamente();
+void ejecuta_movimiento(Juego& juego, Movimiento const& mov);
+pair<int, int> generar_dim_aleatoriamente();
 bool elige_movimiento_inv(Juego const& juego, Movimiento& mov);
 void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov);
 void selecciona_meta_aleatoria(Juego& juego);
+void nuevo_estado(Juego& juego);
+bool hay_ganador(Juego const& juego);
+bool hay_movimientos(Juego const& juego);
+bool movimiento_inverso(Juego& juego);
 
 
 // Públicas
 
-// Procedimiento que crea un juego bloqueado con un tablero vacío
+//Crea un juego bloqueado con un tablero vacío
 void inicializa(Juego& juego) {
 
 	Tablero tab;
 	// Se bloquea el juego y se añade el tablero
-	juego.estado = Estado(2);
+	juego.estado = BLOQUEO;
 
 	inicializa(tab);
 	juego.tablero = tab;
@@ -32,17 +38,14 @@ void inicializa(Juego& juego) {
 // Primero se construye el tablero, luego se fija la meta y se establece el estado jugando.
 bool cargar(Juego&/*sal*/ juego, istream&/*ent/sal*/ entrada) {
 
-	// Variables
-	bool todoCorrecto;
-
 	// Se construye el tablero
-	todoCorrecto = cargar(juego.tablero, entrada);
+	bool todoCorrecto = cargar(juego.tablero, entrada);
 
 	// Se lee e inserta la meta
 	entrada >> juego.filaMeta >> juego.colMeta;
 
 	// Se establece el estado del juego
-	juego.estado = Estado(0);
+	juego.estado = JUGANDO;
 
 	return todoCorrecto;
 }
@@ -50,46 +53,20 @@ bool cargar(Juego&/*sal*/ juego, istream&/*ent/sal*/ entrada) {
 // Función booleana en cuanto a posición correcta y con ficha
 bool posicionValida(Juego const& juego, int f, int c) {
 
-	// Variables
-	bool valida;
-	Celda celda;
-
-	// Se comprueban las dimensiones
-	valida = correcta(juego.tablero, f, c);
-
-	// Si se encuentra dentro del tablero;
-	if (valida) {
-		celda = leerCelda(juego.tablero, f, c);
-		valida = celda == Celda(2); // Hay ficha
-	}
-
-	return valida;
+	return correcta(juego.tablero, f, c) && leerCelda(juego.tablero, f, c) == FICHA;
 
 }
 
 // Procedimiento que completa el movimiento con las direcciones posibles de la ficha
 void posiblesMovimientos(Juego const& juego, Movimiento& mov) {
-
-	// Variables
-	Movimiento movAux;
-
-	// Comprobaremos cada tipo de movimiento y añadiremos los posibles
-	mov.cont = 0;
 	// i = 0 -> Arriba
 	// i = 1 -> Abajo
 	// i = 2 -> Izquierda
 	// i = 3 -> Derecha
 	for (int i = 0; i < NumDir; i++) {
 
-		// La siguiente casilla en direccion i debe tener una ficha
-		movAux = inicializa(fila(mov) + dirs[i].first, columna(mov) + dirs[i].second);
-
-		if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) == Celda(2)) {
-
-			// La siguiente casilla en dirección i debe estar vacía
-			movAux = inicializa(fila(movAux) + dirs[i].first, columna(movAux) + dirs[i].second);
-
-			if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) == Celda(1)) {
+		if (leerCelda(juego.tablero, fila(mov) + dirs[i].first, columna(mov) + dirs[i].second) == FICHA) {
+			if (leerCelda(juego.tablero, fila(mov) + dirs[i].first*2, columna(mov)+ dirs[i].second*2) == VACIA) {
 				insertarDireccion(mov, Direccion(i));
 			}
 		}
@@ -126,7 +103,6 @@ void jugar(Juego& juego, Movimiento const& mov) {
 		mostrar(juego);
 	} // Tiene varias opciones
 	else {
-
 		// Se solicita la direccion deseada, hasta que seleccione una valida
 		do {
 
@@ -159,7 +135,6 @@ void jugar(Juego& juego, Movimiento const& mov) {
 
 // Procedimiento que se encarga de ejecutar un movimiento, es decir, de actualizar el contenido de las casillas afectadas
 void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
-
 	// La casilla del movimiento se vacia
 	escribirCelda(juego.tablero, fila(mov), columna(mov), Celda(1));
 
@@ -168,46 +143,25 @@ void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 
 	// La casilla destino recibe la fichaa
 	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first * 2, columna(mov) + dirs[mov.dirActiva].second * 2, Celda(2));
-
 }
 
 // Procedimiento que se encarga de actualizar el estado del juego
 void nuevo_estado(Juego& juego) {
 	if (hay_ganador(juego)){
-		juego.estado = Estado(1);
+		juego.estado = GANADOR;
 	}
 	else if (hay_movimientos(juego)) {
-		juego.estado = Estado(0);
+		juego.estado = JUGANDO;
 	}
 	else {
-		juego.estado = Estado(2);
+		juego.estado = BLOQUEO;
 	}
 }
 
 // Función booleana en función de la victoria del jugador, es decir, cuando solo quede una ficha y sea la meta
 bool hay_ganador(Juego const& juego) {
-
-	// Variables
-	int num_fichas = 0;
-	bool victoria = false;
-
-	// Se recorre el tablero entero en búsqueda de fichas y se cuentan
-	for (int i = 0; i < numFilas(juego.tablero); i++) {
-		for (int j = 0; j < numColumnas(juego.tablero); j++) {
-			if (leerCelda(juego.tablero,i,j) == FICHA) {
-				num_fichas++;
-			}
-		}
-	}
-
 	// Si solo quedó una ficha y es la meta el jugador ganó
-	if (num_fichas == 1) {
-		if (leerCelda(juego.tablero, juego.filaMeta, juego.colMeta) == Celda(2)) {
-			victoria = true;
-		}
-	}
-
-	return victoria;
+	return (juego.tablero.numFichas == 1 && leerCelda(juego.tablero, juego.filaMeta, juego.colMeta) == FICHA);
 	
 }
 
@@ -249,14 +203,12 @@ bool hay_movimientos(Juego const& juego) {
 
 // Procedimiento que se encarga de generar el tablero
 void generar(Juego& juego, int pasos) {
-
-	// Variables
 	int numPasos = 0;
 	bool pasoExitoso = true;
-	int dim = generar_dim_aleatoriamente();
+	pair<int,int>dim = generar_dim_aleatoriamente();
 
 	// Generamos el tablero con su meta aleatoria
-	inicializa(juego.tablero, dim, dim, Celda(0));
+	inicializa(juego.tablero, dim.first, dim.second, Celda(0));
 	selecciona_meta_aleatoria(juego);
 	// Mientras no hayamos realizado los pasos solicitados y sea posible realizarlos, ejecutamos movimientos
 	while (numPasos <= pasos && pasoExitoso) {
@@ -269,17 +221,12 @@ void generar(Juego& juego, int pasos) {
 
 // Función booleana que ejecuta un movimiento inverso si es posible
 bool movimiento_inverso(Juego& juego) {
-
-	// Variables
-	Movimiento mov;
-	int f, c;
 	bool movEncontrado = false;
-	Movimiento fichActual;
+	
 
 	// Seleccionamos una ficha, buscamos sus posibles movimientos inversos y escogemos uno, de forma aleatoria
-	selecciona_ficha_aleatoria(juego, f, c);
-	fichActual.columna = c;
-	fichActual.fila = f;
+	pair<int, int>ficha= selecciona_ficha_aleatoria(juego);
+	Movimiento fichActual=inicializa(ficha.first, ficha.second);
 	posibles_movimientos_inv(juego, fichActual);
 	movEncontrado = elige_movimiento_inv(juego, fichActual);
 
@@ -298,32 +245,32 @@ void selecciona_meta_aleatoria(Juego & juego) {
 }
 
 // Procedimiento que se encarga de buscar una ficha en el tablero aleatoriamente
-void selecciona_ficha_aleatoria(Juego const& juego, int& f, int& c) {
+pair<int,int> selecciona_ficha_aleatoria(Juego const& juego) {
 
 	// Variables
 	int filas = numFilas(juego.tablero);
 	int columnas = numColumnas(juego.tablero);
-
+	int f, c;
 	// Buscamos una ficha
 	do {
 		f = rand() % filas;
 		c = rand() % columnas;
-	} while (leerCelda(juego.tablero, f, c) != Celda(2));
-
+	} while (leerCelda(juego.tablero, f, c) != FICHA);
+	return { f,c };
 }
 
 // Función que genera las dimensiones del tablero aleatoriamente y la devuelve
-int generar_dim_aleatoriamente() {
+pair<int,int> generar_dim_aleatoriamente() {
+	int minFilas = 4;
+	int maxFilas = 6;
 
-	// Variables
-	int min = 4;
-	int max = 9;
-	int dimension;
+	int minColumnas = 4;
+	int maxColumnas = 8;
 
-	// Generar un número aleatorio [4, 6]
-	dimension = rand() % (max - min + 1) + min;
+	int filas = rand() % (maxFilas - minFilas + 1) + minFilas;
+	int columnas = rand() % (maxColumnas - minColumnas + 1) + minColumnas;
 
-	return dimension;
+	return { filas,columnas };
 }
 
 
