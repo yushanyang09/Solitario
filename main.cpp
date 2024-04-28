@@ -9,14 +9,15 @@ using namespace std;
 
 // Es posible que esta función pertenezca al módulo tablero
 Movimiento leerMovimiento(Juego solitario);
+void mostrarEstado(Juego const& juego);
 void leerPosicion(int& f, int& c);
+void RecibirMov(Juego& juego);
 
 int main() {
     // Inicializa la semilla de generación de números aleatorios
     srand(time(nullptr));
     Juego solitario;
     ifstream archivo;
-    Movimiento movimiento;
     char volver = 'N';
     char Modo;
     cout << "Quieres cargar un juego [C] o empezar con uno aleatorio [A]? ";
@@ -24,24 +25,26 @@ int main() {
     Modo = toupper(Modo);
 
     if (Modo == 'C') {
+        do{
             inicializa(solitario);
             string nombreArchivo;
-            cout << "Introduzca el nombre del archivo del tablero: ";
-            cin >> nombreArchivo;
-            archivo.open(nombreArchivo);
-                if (cargar(solitario, archivo)) {
-                    // se muestra el estado inicial
-                    archivo.close();
-                    mostrar(solitario);
-
-                    // empezamos a jugar
-                    do {
-                        movimiento = leerMovimiento(solitario);
-                        jugar(solitario, movimiento);
-                        if (estado(solitario) == GANADOR) cout << "HAS GANADO " << endl;
-                    } while (estado(solitario) == JUGANDO);
-                }
- 
+            do {
+                cout << "Nombre del archivo con el juego: ";
+                cin >> nombreArchivo;
+                archivo.open(nombreArchivo);
+                system("cls");
+            } while (!archivo.is_open());
+            if (cargar(solitario, archivo)) {
+                archivo.close();
+                mostrar(solitario);
+                RecibirMov(solitario);
+                mostrarEstado(solitario);
+                cout << "\n\n";
+                cout << "Quieres volver a jugar [S/N]? ";
+                cin >> volver;
+            }
+        } while (volver == 'S' || volver == 's');
+     
               
     }
     else if (Modo == 'A') {
@@ -51,22 +54,14 @@ int main() {
             cin >> pasos;
             generar(solitario, pasos);
             // empezamos a jugar
-            do {
-                movimiento = leerMovimiento(solitario);
-                jugar(solitario, movimiento);
-            } while (estado(solitario) == JUGANDO);
-
+            RecibirMov(solitario);
             // mostrar resultado de la partida (ganador o bloqueo)
-            if (estado(solitario) == GANADOR)
-                cout << "\t\t ! ! HAS GANADO ! ! ";
-            else
-                cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
+            mostrarEstado(solitario);
             cout << "\n\n";
             cout << "Quieres volver a jugar [S/N]? ";
             cin >> volver;
         } while (volver == 'S' || volver == 's');
     }
-    return 0;
 }
 
 
@@ -87,3 +82,42 @@ void leerPosicion(int& f, int& c) {
 	c--;
 }
 
+void mostrarEstado(Juego const& juego) {
+    if (estado(juego) == GANADOR)
+        cout << "\t\t ! ! HAS GANADO ! ! ";
+    else
+        cout << "\t NO PUEDES MOVER FICHAS. HAS PERDIDO ";
+}
+void RecibirMov(Juego& juego) {
+    int opcion;
+    do {
+        Movimiento movimiento = leerMovimiento(juego);
+        posiblesMovimientos(juego, movimiento);
+        if (leerCelda(juego.tablero, fila(movimiento), columna(movimiento)) != FICHA)
+            cout << "\nCelda incorrecta o sin ficha\n";
+        else if (numDirs(movimiento) == 0) // No tiene ninguna dirección posible
+            cout << "\nEsa ficha no se puede mover\n";
+        else if (numDirs(movimiento) == 1) // Solo tiene una dirección posible
+            jugar(juego, movimiento);
+        else {
+            // Se solicita la direccion deseada, hasta que seleccione una valida
+            do {
+
+                cout << "Selecciona direccion:\n";
+                for (int i = 1; i <= numDirs(movimiento); i++) {
+                    cout << "\t" << i << " - " << toString(movimiento.direcciones[i - 1]) << '\n';
+                }
+                cin >> opcion;
+
+                if (opcion < 1 || opcion > numDirs(movimiento))
+                    cout << "Direccion invalida\n";
+                else {
+                    fijarDireccionActiva(movimiento, movimiento.direcciones[opcion - 1]);
+                    jugar(juego, movimiento);
+                    mostrar(juego);
+                }
+
+            } while (opcion < 1 || opcion > numDirs(movimiento));
+        }
+    } while (estado(juego) == JUGANDO);
+}

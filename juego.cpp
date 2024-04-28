@@ -85,45 +85,9 @@ Estado estado(Juego const& juego) {
 
 // Modifica el juego aplicando el movimiento
 void jugar(Juego& juego, Movimiento const& mov) {
-	Movimiento movPosibles = mov;
-	int opcion = 0;
-
-	// Obtenemos las posibles direcciones que puede tomar el movimiento
-	posiblesMovimientos(juego, movPosibles);
-
-	// Casos especiales
-	if (leerCelda(juego.tablero, fila(mov), columna(mov)) != Celda(2))
-		cout << "\nCelda incorrecta o sin ficha\n";
-	else if (numDirs(movPosibles) == 0) // No tiene ninguna dirección posible
-		cout << "\nEsa ficha no se puede mover\n";
-	else if (numDirs(movPosibles) == 1) { // Solo tiene una dirección posible
-		ejecuta_movimiento(juego, movPosibles);
-		mostrar(juego);
-	} // Tiene varias opciones
-	else {
-		// Se solicita la direccion deseada, hasta que seleccione una valida
-		do {
-
-			cout << "Selecciona direccion:\n";
-			for (int i = 1; i <= numDirs(movPosibles); i++) {
-				cout << "\t" << i << " - " << toString(movPosibles.direcciones[i-1]) << '\n';
-			}
-			cin >> opcion;
-
-			if (opcion < 1 || opcion > numDirs(movPosibles))
-				cout << "Direccion invalida\n";
-			else {
-				fijarDireccionActiva(movPosibles, movPosibles.direcciones[opcion-1]);
-				ejecuta_movimiento(juego, movPosibles);
-				mostrar(juego);
-			}
-
-		} while (opcion < 1 || opcion > numDirs(movPosibles));
-
-	}
-
-	// Se actualiza el estado del juego
-	nuevo_estado(juego);
+  ejecuta_movimiento(juego, mov);
+  mostrar(juego);
+  nuevo_estado(juego);
 
 }
 
@@ -169,10 +133,11 @@ bool hay_ganador(Juego const& juego) {
 // Función booleana en función de la existencia de posibles movimientos de cualquier ficha en el tablero
 bool hay_movimientos(Juego const& juego) {
 	bool existen = false;
-	int fila = 0, columna=0;
+	int fila = 0, columna;
 
 	// Se recorre el tablero en búsqueda de alguna ficha con al menos un movimiento
 	while (fila < numFilas(juego.tablero) && !existen) {
+		columna = 0;
 		while (columna < numColumnas(juego.tablero) && !existen) {
 			if (leerCelda(juego.tablero, fila, columna) == FICHA ) {
 				Movimiento mov = inicializa(fila, columna);
@@ -184,7 +149,9 @@ bool hay_movimientos(Juego const& juego) {
 					existen = true;
 				}
 			}
+			columna++;
 		}
+		fila++;
 	}
 
 	return existen;
@@ -196,6 +163,7 @@ bool hay_movimientos(Juego const& juego) {
 void generar(Juego& juego, int pasos) {
 	int numPasos = 0;
 	bool pasoExitoso = true;
+	juego.estado = JUGANDO;
 	pair<int,int>dim = generar_dim_aleatoriamente();
 
 	// Generamos el tablero con su meta aleatoria
@@ -219,7 +187,7 @@ bool movimiento_inverso(Juego& juego) {
 	bool movEncontrado = elige_movimiento_inv(juego, fichActual);
 
 	// Devolvemos false si no se encontró ningún movimiento inverso
-	if (movEncontrado)
+	if (movEncontrado) 
 		ejecuta_movimiento_inv(juego, fichActual);//si se encuentra ejecutamos el movimiento
 
     return movEncontrado;
@@ -230,6 +198,7 @@ void selecciona_meta_aleatoria(Juego & juego) {
 	juego.filaMeta = rand() % numFilas(juego.tablero);
 	juego.colMeta = rand() % numColumnas(juego.tablero);
 	escribirCelda(juego.tablero, juego.filaMeta, juego.colMeta, Celda(2));
+	IncrementNumFichas(juego.tablero);
 }
 
 // Procedimiento que se encarga de buscar una ficha en el tablero aleatoriamente
@@ -239,11 +208,12 @@ pair<int,int> selecciona_ficha_aleatoria(Juego const& juego) {
 	int filas = numFilas(juego.tablero);
 	int columnas = numColumnas(juego.tablero);
 	int f, c;
-	// Buscamos una ficha
+
 	do {
 		f = rand() % filas;
 		c = rand() % columnas;
 	} while (leerCelda(juego.tablero, f, c) != FICHA);
+	
 	return { f,c };
 }
 
