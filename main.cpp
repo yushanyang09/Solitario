@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <ctime>     // Para la semilla 
 #include <fstream>
@@ -67,7 +66,7 @@ int main() {
             cin >> volver;
         } while (volver == 'S' || volver == 's');
     }
-
+    return 0;
 }
 
 

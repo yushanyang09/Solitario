@@ -85,8 +85,6 @@ Estado estado(Juego const& juego) {
 
 // Modifica el juego aplicando el movimiento
 void jugar(Juego& juego, Movimiento const& mov) {
-
-	// Variables
 	Movimiento movPosibles = mov;
 	int opcion = 0;
 
@@ -137,12 +135,14 @@ void jugar(Juego& juego, Movimiento const& mov) {
 void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 	// La casilla del movimiento se vacia
 	escribirCelda(juego.tablero, fila(mov), columna(mov), Celda(1));
+	DecrementNumFichas(juego.tablero);
 
 	// La casilla sobre la que se salta se vacia
 	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first, columna(mov) + dirs[mov.dirActiva].second, Celda(1));
-
+	DecrementNumFichas(juego.tablero);
 	// La casilla destino recibe la fichaa
 	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first * 2, columna(mov) + dirs[mov.dirActiva].second * 2, Celda(2));
+	IncrementNumFichas(juego.tablero);
 }
 
 // Procedimiento que se encarga de actualizar el estado del juego
@@ -168,21 +168,14 @@ bool hay_ganador(Juego const& juego) {
 
 // Función booleana en función de la existencia de posibles movimientos de cualquier ficha en el tablero
 bool hay_movimientos(Juego const& juego) {
-
-	// Variables
-	Movimiento mov;
 	bool existen = false;
-	int fila = 0, columna;
+	int fila = 0, columna=0;
 
 	// Se recorre el tablero en búsqueda de alguna ficha con al menos un movimiento
 	while (fila < numFilas(juego.tablero) && !existen) {
-
-		columna = 0;
 		while (columna < numColumnas(juego.tablero) && !existen) {
-
-			if (leerCelda(juego.tablero, fila, columna) == Celda(2) ) {
-				mov = inicializa(fila, columna);
-
+			if (leerCelda(juego.tablero, fila, columna) == FICHA ) {
+				Movimiento mov = inicializa(fila, columna);
 				// Calcular los posibles movimientos desde esta celda
 				posiblesMovimientos(juego, mov);
 
@@ -191,9 +184,7 @@ bool hay_movimientos(Juego const& juego) {
 					existen = true;
 				}
 			}
-			columna++;
 		}
-		fila++;
 	}
 
 	return existen;
@@ -221,14 +212,11 @@ void generar(Juego& juego, int pasos) {
 
 // Función booleana que ejecuta un movimiento inverso si es posible
 bool movimiento_inverso(Juego& juego) {
-	bool movEncontrado = false;
-	
-
 	// Seleccionamos una ficha, buscamos sus posibles movimientos inversos y escogemos uno, de forma aleatoria
 	pair<int, int>ficha= selecciona_ficha_aleatoria(juego);
 	Movimiento fichActual=inicializa(ficha.first, ficha.second);
 	posibles_movimientos_inv(juego, fichActual);
-	movEncontrado = elige_movimiento_inv(juego, fichActual);
+	bool movEncontrado = elige_movimiento_inv(juego, fichActual);
 
 	// Devolvemos false si no se encontró ningún movimiento inverso
 	if (movEncontrado)
@@ -276,11 +264,6 @@ pair<int,int> generar_dim_aleatoriamente() {
 
 // Procedimiento que completa el movimiento con las direcciones posibles de la ficha
 void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
-
-	// Variables
-	Movimiento movAux;
-	mov.cont = 0;
-
 	// i = 0 -> Arriba
 	// i = 1 -> Abajo
 	// i = 2 -> Izquierda
@@ -288,23 +271,22 @@ void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
 	for (int i = 0; i < NumDir; i++) {
 
 		// La siguiente casilla en direccion i NO debe tener una ficha
-		movAux = inicializa(fila(mov) + dirs[i].first, columna(mov) + dirs[i].second);
+		Movimiento movAux = inicializa(fila(mov) + dirs[i].first, columna(mov) + dirs[i].second);
 
-		if (correcta(juego.tablero, fila(movAux), columna(movAux))) {
-			if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) != Celda(2)) {
+		if (correcta(juego.tablero, fila(movAux), columna(movAux))){
+			if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) != FICHA) {
 
 				// La siguiente casilla en dirección i NO debe tener una ficha
 				movAux = inicializa(fila(movAux) + dirs[i].first, columna(movAux) + dirs[i].second);
 
 				if (correcta(juego.tablero, fila(movAux), columna(movAux))) {
-					if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) != Celda(2)) {
+					if (leerCelda(juego.tablero, fila(movAux), columna(movAux)) != FICHA)
 						insertarDireccion(mov, Direccion(i));
-					}
 				}
 			}
 		}
-	}
 
+	}
 	// Si solo hubiese una dirección posible se establece como la activa
 	if (numDirs(mov))
 		fijarDireccionActiva(mov, mov.direcciones[0]);
@@ -313,8 +295,6 @@ void posibles_movimientos_inv(Juego const& juego, Movimiento& mov) {
 
 // Función booleana que elige la direccción de un movimiento de forma aleatoria, si es que hay. Devuelve su exito o false si no había movimientos
 bool elige_movimiento_inv(Juego const& juego, Movimiento& mov) {
-
-	// Variables
 	bool movimientos = true;
 	if (numDirs(mov) > 0) {
 		int dir = rand() % numDirs(mov);
@@ -332,10 +312,13 @@ bool elige_movimiento_inv(Juego const& juego, Movimiento& mov) {
 void ejecuta_movimiento_inv(Juego& juego, Movimiento const& mov) {
 	// La casilla del movimiento se vacia
 	escribirCelda(juego.tablero, fila(mov), columna(mov), Celda(1));
+	DecrementNumFichas(juego.tablero);
 
 	// La casilla sobre la que se salta se pone ficha
 	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first, columna(mov) + dirs[mov.dirActiva].second, Celda(2));
+	IncrementNumFichas(juego.tablero);
 
 	// La casilla destino recibe la ficha
 	escribirCelda(juego.tablero, fila(mov) + dirs[mov.dirActiva].first * 2, columna(mov) + dirs[mov.dirActiva].second * 2, Celda(2));
+	IncrementNumFichas(juego.tablero);
 }
