@@ -4,21 +4,32 @@ using namespace std;
 // Función que convierte una dir. en un string
 string toString(Direccion d) {
 
-	// Array con el nombre de los tipos enumerados
-	string strArray[] = {"ARRIBA", "ABAJO", "IZQUIERDA", "DERECHA", "INDETERMINADA"};
+    string dir;
+    switch (d) {
+    case 0:
+        dir = "ARRIBA";
+        break;
+    case 1:
+        dir = "ABAJO";
+        break;
+    case 2:
+        dir = "IZQUIERDA";
+        break;
+    case 3:
+        dir = "DERECHA";
+        break;
+    case 4:
+        dir = "INDETERMINADA";
+        break;
+    }
 
-	// Se emplea el índice del enum para mostrar su nombre correspondiente
-	return strArray[d];
+    return dir;
 
 }
 
 // Función que devuelve un Movimiento con la posición de su ficha
 Movimiento inicializa(int f, int c) {
-
-	// Variables
 	Movimiento mov;
-
-	// Se establece la posición de la ficha
 	mov.fila = f;
 	mov.columna = c;
 	mov.cont = 0;
