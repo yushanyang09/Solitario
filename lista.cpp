@@ -36,5 +36,25 @@ void eliminar(ListaJuegos& lista, int pos) {
 }
 
 Juego& obtener(ListaJuegos& lista, int i) {
+	return lista.datos[i];
+}
+
+Juego const& obtener(ListaJuegos const& lista, int i) {
+	return lista.datos[i];
+}
+
+int numElems(ListaJuegos const& lista) {
+	return lista.cont;
+}
+
+bool esVacia(ListaJuegos const& lista) {
+	return lista.cont == 0;
+}
+
+bool cargar(ListaJuegos& lista, std::istream&/*ent/sal*/ entrada) {
+
+
+}
+void guardar(ListaJuegos const& lista, std::ostream&/*ent/sal*/ salida) {
 
 }
