@@ -3,7 +3,6 @@
 
 #include "tablero.h"
 #include "movimiento.h"
-using namespace std;
 
 enum Estado { JUGANDO, GANADOR, BLOQUEO };
 
@@ -22,6 +21,8 @@ void posiblesMovimientos(Juego const& juego, Movimiento& mov);
 Estado estado(Juego const& juego);
 void jugar(Juego& juego, Movimiento const& mov);
 void mostrar(Juego const& juego);
+void generar(Juego& juego, int pasos);//para la generación del tablero aleatorio
+
 
 #endif
 

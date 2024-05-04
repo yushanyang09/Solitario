@@ -1,5 +1,8 @@
 #ifndef COLORES_H
 #define COLORES_H
+#include <iostream>
+#include <iomanip>
+#include "juego.h"
 
 // Otra idea de colores en C++:
 //  
@@ -41,4 +44,23 @@
 
 #define BG_VERDELIMA    "\x1B[48;2;204;255;0m"
 #define BG_ROSA    "\x1B[48;2;255;0;255m"
+
+
+// CONSTANTES
+const char Horizontal = char(196);
+const char UpperLeft = char(218);
+const char UpperCross = char(194);
+const char UpperRight = char(191);
+const char Vertical = char(179);
+const char MidLeft = char(195);
+const char MidCross = char(197);
+const char MidRight = char(180);
+const char LowerLeft = char(192);
+const char LowerCross = char(193);
+const char LowerRight = char(217);
+const char Square = char(219);
+
+const int DEFAULT_COLOR = -1;
+
+void mostrar(Juego const& juego);
 #endif // COLORES_H
