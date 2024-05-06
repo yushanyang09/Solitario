@@ -1,4 +1,5 @@
 #include "lista.h"
+#include "tablero.h"
 
 void redimensionarLista(ListaJuegos& lista,int nuevaCapacidad);
 
@@ -67,12 +68,24 @@ bool esVacia(ListaJuegos const& lista) {
 // Rellena la lista de juegos con la información en el flujo de entrada
 //recibido como argumento
 bool cargar(ListaJuegos& lista, std::istream&/*ent/sal*/ entrada) {
-
-
+	int i = 0;
+	bool cargado = true;
+	while (i < lista.cont) {
+		cargado = cargar(lista.datos[i].tablero, entrada);
+		i++;
+	}
+	return cargado;
 }
 
 // Guarda en el flujo de salida la información en la lista de juegos con el
 // formato descrito en el punto anterior
 void guardar(ListaJuegos const& lista, std::ostream&/*ent/sal*/ salida) {
-
+	int i = 0;
+	while (i < lista.cont) {
+		for (int j = 0; i < numFilas(lista.datos[i].tablero); i++) {
+			for (int k = 0; i < numColumnas(lista.datos[i].tablero); k++)
+				salida << leerCelda(lista.datos[i].tablero, j, k);
+		}
+		i++;
+	}
 }
