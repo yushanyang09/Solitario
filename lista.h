@@ -2,8 +2,6 @@
 #define LISTA_H
 #include "juego.h"
 
-const int TM = 5;
-
 struct ListaJuegos {
 	Juego* datos;
 	int cont;

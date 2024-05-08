@@ -1,5 +1,7 @@
 #include "lista.h"
 
+const int TM = 20;
+
 void redimensionarLista(ListaJuegos& lista,int nuevaCapacidad);
 
 // Crea una lista vacía, sin elementos
@@ -25,7 +27,7 @@ void insertar(ListaJuegos& lista, Juego& juego) {
 	lista.cont++;
 }
 
-//
+// Modifica el tamaño del array dinámico
 void redimensionarLista(ListaJuegos& lista,int nuevaCapacidad) {
 	Juego* viejo = lista.datos;
 	lista.capacidad = nuevaCapacidad;
