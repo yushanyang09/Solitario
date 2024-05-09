@@ -124,7 +124,7 @@ bool llena(ListaUsuarios const& lista) {
 bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
 
 	int numUsuarios, pos, i = 0;
-	bool cargado = true;
+	bool cargado = false;
 	entrada >> numUsuarios;
 	std::string idUsuario;
 
@@ -132,7 +132,7 @@ bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
 	while (i < numUsuarios && cargado) {
 
 		// Primero su identificador
-		std::getline(entrada, idUsuario);
+		entrada >> idUsuario; 
 		cargado = insertar(lista, idUsuario, pos);
 
 		// Y a continuación la información de las partidas del usuario
