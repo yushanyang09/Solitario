@@ -17,7 +17,7 @@ bool RecibirMov(Juego& juego);
 
 int main() {
 
-
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     // Inicializa la semilla de generación de números aleatorios
     srand(time(nullptr));
     Juego solitario;

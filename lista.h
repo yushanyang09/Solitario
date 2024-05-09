@@ -1,6 +1,7 @@
 #ifndef LISTA_H
 #define LISTA_H
 #include "juego.h"
+#include "memoryleaks.h"
 
 struct ListaJuegos {
 	Juego* datos;

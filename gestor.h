@@ -4,6 +4,7 @@
 #include "juego.h"
 #include "listaOrdenada.h"
 #include "lista.h"
+#include "memoryleaks.h"
 
 const int NOLOGIN = -1;
 struct Gestor {

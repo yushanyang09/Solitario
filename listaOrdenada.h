@@ -3,7 +3,7 @@
 
 #include "lista.h"
 #include <cassert>
-
+#include "memoryleaks.h"
 /*
  * ste módulo sirve para almacenar la información de los usuarios con partidas comenzadas. En concreto, mantendrá una lista de punteros a pares ⟨ usuario, partidas ⟩, ordenada
 de menor a mayor por identificador de usuario, para que las búsquedas por usuario sean
