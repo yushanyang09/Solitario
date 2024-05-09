@@ -124,7 +124,7 @@ bool llena(ListaUsuarios const& lista) {
 bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
 
 	int numUsuarios, pos, i = 0;
-	bool cargado = false;
+	bool cargado = true;
 	entrada >> numUsuarios;
 	std::string idUsuario;
 

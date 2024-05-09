@@ -71,8 +71,8 @@ bool esVacia(ListaJuegos const& lista) {
 //recibido como argumento
 bool cargar(ListaJuegos& lista, std::istream&/*ent/sal*/ entrada) {
 	int i = 0;
-	bool cargado = false;
-	while (i < lista.cont) {
+	bool cargado = true ;
+	while (i < lista.cont && cargado) {
 		cargado = cargar(lista.datos[i].tablero, entrada);
 		i++;
 	}
