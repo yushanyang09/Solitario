@@ -15,6 +15,7 @@ void login(Gestor& gestor, std::string const& usuario) {
 	    gestor.usuario_activo = pos;
 	}
 }
+
 void logout(Gestor& gestor) {
 	assert(gestor.usuario_activo != NOLOGIN);
 		if (!tienePartidas(gestor)) {
