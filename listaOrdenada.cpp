@@ -1,4 +1,5 @@
 #include "listaOrdenada.h"
+#include "string"
 
 /*
  * ste módulo sirve para almacenar la información de los usuarios con partidas comenzadas. En concreto, mantendrá una lista de punteros a pares ⟨ usuario, partidas ⟩, ordenada
@@ -52,9 +53,8 @@ void busqueda(ListaUsuarios const& lista,  std::string const& id, int inicio, in
 bool insertar(ListaUsuarios& lista, std::string const& id, int& pos) {
 
 	bool insertado = false;
-	pos = 0;
 
-	if (lista.cont < 20) {
+	if (lista.cont < TM) {
 
 		// Buscamos la posición en la que debemos insertar
 		busqueda(lista, id, 0, lista.cont - 1, pos);
