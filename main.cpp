@@ -26,6 +26,7 @@ int main() {
     // Inicializa la semilla de generación de números aleatorios
     srand(time(nullptr));
     ifstream archivo;
+	ofstream archivoOut;
 	Gestor gestor;
     char volver = 'N';
     char Modo;
@@ -44,38 +45,43 @@ int main() {
 			
 			inicializar(gestor);
 			archivo.open("partidas.txt");
-			archivo.close();
 			system("cls");
 
-				if (cargar(gestor, archivo)){
-
+			if (cargar(gestor, archivo)) {
+				archivo.close();
+				do {
 					login(gestor, id);
 					if (tienePartidas(gestor)) {
 						mostrarPartidas(gestor);
 						int opcion = leerPartida();
-						if (opcion !=0) {
+						if (opcion != 0) {
 							Juego& partida_actual = partida(gestor, opcion);
 							if (RecibirMov(partida_actual)) {
 								if (estado(partida_actual) != JUGANDO) {
 									mostrarEstado(partida_actual);
 									eliminarPartida(gestor, opcion);
-								
+
 								}
 							}
 						}
 						else {
 							cout << "Indica el numero de pasos para crear el tablero aleatorio: ";
 							cin >> pasos;
-							int opcion= insertarAleatoria(gestor, pasos);
+							int opcion = insertarAleatoria(gestor, pasos);
 							Juego& partida_actual = partida(gestor, opcion);
-							if (RecibirMov(partida_actual)) {
+							if (!RecibirMov(partida_actual)) {
 								if (estado(partida_actual) != JUGANDO) {
 									mostrarEstado(partida_actual);
 									eliminarPartida(gestor, gestor.usuario_activo);
 
 								}
 							}
-
+							else {
+								// Si RecibirMov devolvio true es que el jugador salio sin terminar
+								archivoOut.open("partidas.txt");
+								guardar(gestor, archivoOut);
+								archivoOut.close();
+							}
 
 						}
 					}
@@ -83,27 +89,38 @@ int main() {
 						cout << "No tienes partidas comenzadas.Vamos a crear un juego aleatorio.";
 						cout << "Indica el numero de pasos para crear el tablero aleatorio: ";
 						cin >> pasos;
-						int opcion=insertarAleatoria(gestor, pasos);
+						int opcion = insertarAleatoria(gestor, pasos);
 						Juego& partida_actual = partida(gestor, opcion);
-						if (RecibirMov(partida_actual)) {
+						if (!RecibirMov(partida_actual)) {
 							if (estado(partida_actual) != JUGANDO) {
 								mostrarEstado(partida_actual);
 								eliminarPartida(gestor, gestor.usuario_activo);
 
 							}
 						}
+						else {
+							// Si RecibirMov devolvio true es que el jugador salio sin terminar
+							archivoOut.open("partidas.txt");
+							guardar(gestor, archivoOut);
+							archivoOut.close();
+						}
 					}
-					
+
 					cout << "Quieres seguir jugando [S/N]? ";
 					cin >> volver;
 
 
 				} while (volver != 'N');
 
-			cout << "Quieres seguir jugando [S/N]? ";
-			cin >> volver;
-			
-	    } while (volver != 'N');
+			}
+			else {
+
+				cout << "El archivo no ha cargado correctamente";
+				id = "FIN";
+
+			}
+
+	    }
 
 
 	} while (!(id == "FIN"));
@@ -122,7 +139,7 @@ bool leerMovimiento(Juego solitario, Movimiento& mov) {
 	int fila, columna;
 	if (!leerPosicion(fila, columna))  // Si no se pudieron leer las coordenadas
 		return false;  // Salir de la función
-	if (fila == 0)  // Si el usuario ingresa 0 para ambas coordenadas
+	if (fila == 0)  // Si el usuario ingresa 0s
 		return false;  // Salir de la función
 	mov = inicializa(fila, columna);
 	return true;

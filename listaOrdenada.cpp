@@ -132,7 +132,6 @@ bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
 	bool cargado = true;
 	entrada >> numUsuarios;
 	std::string idUsuario;
-
 	// Leemos a cada usuario mientras los anteriores lo hayan sido correctamente
 	while (lista.cont < numUsuarios && cargado) {
 
@@ -140,7 +139,6 @@ bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
 		entrada >> idUsuario; 
 		cargado = insertar(lista, idUsuario, pos);
 		entrada >> numPartidas;
-		cout << cargado;
 		// Y a continuación la información de las partidas del usuario
 		if (cargado) { // (si logramos insertarlo)
 			inicializar(lista.usuarios[pos]->partidas);
@@ -151,7 +149,6 @@ bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
 				lista.usuarios[pos]->partidas.cont++;
 			}
 		}
-		lista.cont++;
 	}
 	// Sera true solo si todos los usuarios han sido cargados con sus respectivas partidas
 	return cargado;
