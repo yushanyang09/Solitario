@@ -151,7 +151,7 @@ bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
 				lista.usuarios[pos]->partidas.cont++;
 			}
 		}
-		lista.cont;
+		lista.cont++;
 	}
 	// Sera true solo si todos los usuarios han sido cargados con sus respectivas partidas
 	return cargado;
