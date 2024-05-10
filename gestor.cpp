@@ -57,7 +57,7 @@ int insertarAleatoria(Gestor& gestor, int pasos) {
 	Juego nuevo_juego;
 	generar(nuevo_juego, pasos);
 	insertar(partidas, nuevo_juego);
-	return partidas.cont - 1 ;
+	return partidas.cont  ;
 }
 
 Juego& partida(Gestor& gestor, int part) {
