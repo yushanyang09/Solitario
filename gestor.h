@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #ifndef GESTOR_H
 #define GESTOR_H
 #include "string"

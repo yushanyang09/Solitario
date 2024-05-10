@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #include "movimiento.h"
 using namespace std;
 

@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #ifndef COLORES_H
 #define COLORES_H
 #include <iostream>

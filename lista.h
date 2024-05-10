@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #ifndef LISTA_H
 #define LISTA_H
 #include "juego.h"

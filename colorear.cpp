@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #include "colores.h"
 
 using namespace std;

@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #include "listaOrdenada.h"
 #include "string"
 
@@ -137,7 +140,7 @@ bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
 		entrada >> idUsuario; 
 		cargado = insertar(lista, idUsuario, pos);
 		entrada >> numPartidas;
-
+		cout << cargado;
 		// Y a continuación la información de las partidas del usuario
 		if (cargado) { // (si logramos insertarlo)
 			inicializar(lista.usuarios[pos]->partidas);

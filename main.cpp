@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #include <iostream>
 #include <ctime>     // Para la semilla 
 #include <fstream>
@@ -41,10 +44,10 @@ int main() {
 			
 			inicializar(gestor);
 			archivo.open("partidas.txt");
+			archivo.close();
 			system("cls");
 
 				if (cargar(gestor, archivo)){
-					archivo.close();
 
 					login(gestor, id);
 					if (tienePartidas(gestor)) {
@@ -83,6 +86,7 @@ int main() {
 					
 					cout << "Quieres seguir jugando [S/N]? ";
 					cin >> volver;
+
 
 				} while (volver != 'N');
 

@@ -1,6 +1,8 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #include "tablero.h"
 using namespace std;
-
 
 // Procedimiento que se encarga de construir el tablero y sus atributos con los valores pasados por parámetro
 void inicializa(Tablero& tab, int fil, int col, Celda inicial) {

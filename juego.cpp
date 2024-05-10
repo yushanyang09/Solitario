@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #include "juego.h"
 #include "tablero.h"
 #include "movimiento.h"

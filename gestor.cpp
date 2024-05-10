@@ -1,3 +1,6 @@
+// YUSHAN YANG XU
+// BRYAN XAVIER QUILUMBA FARINANGO
+
 #include "gestor.h"
 #include <cassert>
 
@@ -12,8 +15,10 @@ void destruir(Gestor& gestor) {
 
 void login(Gestor& gestor, std::string const& usuario) {
 	int pos = -1;
+	std::cout << usuario << ' ';
 	if (buscar(gestor.usuarios,usuario,pos)) {
 	    gestor.usuario_activo = pos;
+		std::cout << pos << '\n';
 	}
 	else {
 		insertar(gestor.usuarios, usuario, pos);
@@ -75,7 +80,8 @@ void eliminarPartida(Gestor& gestor, int part) {
 	
 }
 bool cargar(Gestor& gestor, std::istream&/*ent/sal*/ entrada) {
-	bool cargado= cargar(gestor.usuarios, entrada);
+	bool cargado = cargar(gestor.usuarios, entrada);
+	//mostrar(obtener(gestor.usuarios.usuarios[0]->partidas, 0));
 	return cargado;
 }
 void guardar(Gestor const& gestor, std::ostream&/*ent/sal*/ salida) {
