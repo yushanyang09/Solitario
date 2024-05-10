@@ -5,6 +5,7 @@
 #include "listaOrdenada.h"
 #include "lista.h"
 #include "memoryleaks.h"
+#include "colores.h"
 
 const int NOLOGIN = -1;
 struct Gestor {

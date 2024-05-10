@@ -70,11 +70,12 @@ bool esVacia(ListaJuegos const& lista) {
 // Rellena la lista de juegos con la información en el flujo de entrada
 //recibido como argumento
 bool cargar(ListaJuegos& lista, std::istream&/*ent/sal*/ entrada) {
-	int i = 0;
+	int numPartidas;
+	entrada >> numPartidas;
 	bool cargado = true ;
-	while (i < lista.cont && cargado) {
-		cargado = cargar(lista.datos[i].tablero, entrada);
-		i++;
+	while (lista.cont < numPartidas && cargado) {
+		cargado = cargar(lista.datos[lista.cont].tablero, entrada);
+		lista.cont++;
 	}
 	return cargado;
 }

@@ -20,9 +20,8 @@ bool posicionValida(Juego const& juego, int f, int c);
 void posiblesMovimientos(Juego const& juego, Movimiento& mov);
 Estado estado(Juego const& juego);
 void jugar(Juego& juego, Movimiento const& mov);
-void mostrar(Juego const& juego);
 void generar(Juego& juego, int pasos);//para la generación del tablero aleatorio
-
+void guardar(Juego const& juego, ostream& salida);
 
 #endif
 

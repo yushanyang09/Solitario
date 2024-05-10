@@ -67,6 +67,7 @@ bool insertar(ListaUsuarios& lista, std::string const& id, int& pos) {
 
 		// Insertamos el nuevo usuario
 		lista.usuarios[pos]->user = id;
+		inicializar(lista.usuarios[pos]->partidas);
 		lista.cont++;
 		insertado = true;
 
@@ -109,6 +110,7 @@ ListaJuegos& obtener(ListaUsuarios& lista, int i) {
 
 ListaJuegos const& obtener(ListaUsuarios const& lista, int i) {
 	return lista.usuarios[i]->partidas;
+	
 }
 
 int numElems(ListaUsuarios const& lista) {
@@ -122,30 +124,38 @@ bool llena(ListaUsuarios const& lista) {
 
 // rellena la lista de pares con la información en el flujo de entrada recibido como argumento
 bool cargar(ListaUsuarios& lista, std::istream&/*ent/sal*/ entrada) {
-
-	int numUsuarios, pos, i = 0;
+	int numUsuarios, pos;
+	int numPartidas;
 	bool cargado = true;
 	entrada >> numUsuarios;
 	std::string idUsuario;
 
 	// Leemos a cada usuario mientras los anteriores lo hayan sido correctamente
-	while (i < numUsuarios && cargado) {
+	while (lista.cont < numUsuarios && cargado) {
 
 		// Primero su identificador
 		entrada >> idUsuario; 
 		cargado = insertar(lista, idUsuario, pos);
+		entrada >> numPartidas;
 
 		// Y a continuación la información de las partidas del usuario
-		if (cargado) // (si logramos insertarlo)
-			cargado = cargar(lista.usuarios[pos]->partidas, entrada);
-
+		if (cargado) { // (si logramos insertarlo)
+			inicializar(lista.usuarios[pos]->partidas);
+			while (lista.usuarios[pos]->partidas.cont < numPartidas) {
+				Juego juego = lista.usuarios[pos]->partidas.datos[lista.usuarios[pos]->partidas.cont];
+				cargado = cargar(juego, entrada);
+				lista.usuarios[pos]->partidas.datos[lista.usuarios[pos]->partidas.cont] = juego;
+				lista.usuarios[pos]->partidas.cont++;
+			}
+		}
+		lista.cont;
 	}
 	// Sera true solo si todos los usuarios han sido cargados con sus respectivas partidas
 	return cargado;
 }
 
 // guarda en el flujo de salida la información en la lista de usuarios
-void guardar(ListaUsuarios const& lista, ostream&/*ent/sal*/ salida) {
+void guardar(ListaUsuarios const& lista, std::ostream&/*ent/sal*/ salida) {
 
 	// Primero guardamos el número de usuarios
 	salida << lista.cont << '\n';
@@ -155,12 +165,15 @@ void guardar(ListaUsuarios const& lista, ostream&/*ent/sal*/ salida) {
 
 		// Identificador del usuario
 		salida << lista.usuarios[i]->user << '\n';
+
 		// Las partidas del usuario
-		guardar(lista.usuarios[i]->partidas, salida);
-
+		salida << lista.usuarios[i]->partidas.cont << '\n';
+		for (int j = 0; j < lista.usuarios[i]->partidas.cont; ++j) {
+			guardar(lista.usuarios[i]->partidas.datos[j], salida);
+		}
 	}
-
 }
+
 
 // DUDAS: inicialiar a new o nullptr, eliminar e insertar (es correcto el assert)
 // cargar: destruir si una lectura dio error?

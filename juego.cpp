@@ -37,6 +37,7 @@ void inicializa(Juego& juego) {
 bool cargar(Juego&/*sal*/ juego, istream&/*ent/sal*/ entrada) {
 
 	// Se construye el tablero
+	inicializa(juego);
 	bool todoCorrecto = cargar(juego.tablero, entrada);
 
 	if (todoCorrecto) {
@@ -90,7 +91,20 @@ void jugar(Juego& juego, Movimiento const& mov) {
   nuevo_estado(juego);
 
 }
+// guarda en el flujo de salida la información de la partida
+void guardar(Juego const& juego, std::ostream& salida) {
+	// Guardamos las dimensiones del tablero
+	salida << juego.tablero.numFilas << ' ' << juego.tablero.numColumnas<< '\n';
 
+	// Guardamos el tablero
+	for (int i = 0; i < juego.tablero.numFilas; ++i) {
+		for (int j = 0; j < juego.tablero.numColumnas; ++j) {
+			salida << juego.tablero.celdas[i][j] << ' ';
+		}
+		salida << '\n';
+	}
+
+}
 // Procedimiento que se encarga de ejecutar un movimiento, es decir, de actualizar el contenido de las casillas afectadas
 void ejecuta_movimiento(Juego& juego, Movimiento const& mov) {
 	// La casilla del movimiento se vacia

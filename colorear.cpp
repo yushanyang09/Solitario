@@ -12,7 +12,6 @@ void pintaCentroCelda(int fila, Juego const& juego);
 
 // Procedimiento que se encarga de mostrar el tablero
 void mostrar(Juego const& juego) {
-	system("cls"); // borrar consola (clear en Linux)
 	cout << RESET;
 
 	// borde superior

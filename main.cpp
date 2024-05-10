@@ -6,6 +6,7 @@
 #include "movimiento.h"
 #include "colores.h"
 #include "listaOrdenada.h"
+#include "gestor.h"
 
 using namespace std;
 
@@ -14,19 +15,19 @@ bool leerMovimiento(Juego solitario, Movimiento &mov);
 void mostrarEstado(Juego const& juego);
 bool leerPosicion(int& f, int& c);
 bool RecibirMov(Juego& juego);
+int leerPartida();
 
 int main() {
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     // Inicializa la semilla de generación de números aleatorios
     srand(time(nullptr));
-    Juego solitario;
-	ListaUsuarios listaUsuarios;
     ifstream archivo;
+	Gestor gestor;
     char volver = 'N';
     char Modo;
 	string id;
-	int pos, partida, pasos;
+	int pasos;
 
 	do {
 
@@ -36,98 +37,83 @@ int main() {
 
 		if (id != "FIN") {
 
-			// Inicializamos y cargamos los usuarios
-			inicializar(listaUsuarios);
+			// Inicializamos el gestor 
+			
+			inicializar(gestor);
 			archivo.open("partidas.txt");
 			system("cls");
 
-			do {
-
-				if (cargar(listaUsuarios, archivo))
-				{
+				if (cargar(gestor, archivo)){
 					archivo.close();
 
-					// Una vez estan cargados los usuarios, buscamos las partidas
-					// Pero antes comprobamos si tiene
-					if (buscar(listaUsuarios, id, pos)) {
-						// Si existe es seguro que tiene partidas
-						cout << "Tus partidas empezadas:\n";
-						ListaJuegos partidas = listaUsuarios.usuarios[pos]->partidas;
-						for (int i = 0; i < partidas.cont; i++) {
-							cout << i + 1 << "  --------------------------------------\n";
-							mostrar(obtener(partidas, i));
-						}
-
-						// Una vez mostradas se pregunta por cuál quiere jugar
-
-						do {
-							cout << "Elige una partida o 0 para crear una nueva aleatoria: ";
-							cin >>  partida;
-
-							// Modo aleatorio
-							if (!partida) {
-								int pasos;
-								cout << "Indica el numero de pasos para crear el juego aleatorio: ";
-								cin >> pasos;
-								generar(solitario, pasos);
-								// empezamos a jugar
-								RecibirMov(solitario);
-								// mostrar resultado de la partida (ganador o bloqueo)
-								mostrarEstado(solitario);
-							} else {
-								// Cargamos partida
-								solitario = obtener(partidas, partida);
-								mostrar(solitario);
-
-								if (RecibirMov(solitario))
-									mostrarEstado(solitario);
-								if (estado(solitario) != JUGANDO)
-									eliminar(partidas, partida);
-								if (partidas.cont < 1) {
-									eliminar(listaUsuarios, pos);
-									partida = -1;
+					login(gestor, id);
+					if (tienePartidas(gestor)) {
+						mostrarPartidas(gestor);
+						int opcion = leerPartida();
+						if (opcion !=0) {
+							Juego& partida_actual = partida(gestor, opcion);
+							if (RecibirMov(partida_actual)) {
+								if (estado(partida_actual) != JUGANDO) {
+									mostrarEstado(partida_actual);
+									eliminarPartida(gestor, opcion);
+								
 								}
 							}
-
-
-						} while (partida < 0 || partida > partidas.cont);
-
-
-					} else {
-						// Usuario no encontrado
-						cout << "Indica el numero de pasos para crear el juego aleatorio: ";
-						cin >> pasos;
-						generar(solitario, pasos);
-						// empezamos a jugar
-						RecibirMov(solitario);
-						// mostrar resultado de la partida (ganador o bloqueo)
-						mostrarEstado(solitario);
+						}
+						else {
+							cout << "Indica el numero de pasos para crear el tablero aleatorio: ";
+							cin >> pasos;
+							insertarAleatoria(gestor, pasos);
+						}
 					}
+					else {
+						cout << "No tienes partidas comenzadas.Vamos a crear un juego aleatorio.";
+						cout << "Indica el numero de pasos para crear el tablero aleatorio: ";
+						cin >> pasos;
+						int opcion=insertarAleatoria(gestor, pasos);
+						Juego& partida_actual = partida(gestor, opcion);
+						if (RecibirMov(partida_actual)) {
+							if (estado(partida_actual) != JUGANDO) {
+								mostrarEstado(partida_actual);
+								eliminarPartida(gestor, opcion);
 
-				}
-				cout << "Quieres seguir jugando [S/N]? ";
-				cin >> volver;
+							}
+						}
+					}
+					
+					cout << "Quieres seguir jugando [S/N]? ";
+					cin >> volver;
 
-			} while (volver != 'N');
+				} while (volver != 'N');
 
-		}
+			cout << "Quieres seguir jugando [S/N]? ";
+			cin >> volver;
+			
+	    } while (volver != 'N');
+
+
 	} while (!(id == "FIN"));
-
+	destruir(gestor);
 }
 
-
-//Funcion que se encarga de leer los movimientos del usuario
-bool leerMovimiento(Juego solitario, Movimiento &mov) {
-
-    cout << "Selecciona una FICHA (fila y columna, 0 para salir):";
-    int fila, columna;
-    if (leerPosicion(fila, columna)) {
-		mov = inicializa(fila, columna);
-		return true;
-	}
-    return false;
-
+int leerPartida() {
+	int partida;
+	cout<<" Elige una partida o 0 para crear una nueva aleatoria : ";
+    cin >> partida; 
+	return partida;
 }
+// Función que se encarga de leer los movimientos del usuario
+bool leerMovimiento(Juego solitario, Movimiento& mov) {
+	cout << "Selecciona una FICHA (fila y columna, 0 para salir):";
+	int fila, columna;
+	if (!leerPosicion(fila, columna))  // Si no se pudieron leer las coordenadas
+		return false;  // Salir de la función
+	if (fila == 0)  // Si el usuario ingresa 0 para ambas coordenadas
+		return false;  // Salir de la función
+	mov = inicializa(fila, columna);
+	return true;
+}
+
 //funcion que se encarga de leer la fila y columna elegida del jugador
 bool leerPosicion(int& f, int& c) {
     cin >> f;

@@ -39,6 +39,7 @@ bool cargar(Tablero&/*sal*/ tab, istream&/*ent/sal*/ entrada) {
 				IncrementNumFichas(tab);
 		}
 	}
+	
 
 	return cargado;
 
