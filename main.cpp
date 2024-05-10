@@ -78,7 +78,7 @@ int main() {
 						if (RecibirMov(partida_actual)) {
 							if (estado(partida_actual) != JUGANDO) {
 								mostrarEstado(partida_actual);
-								eliminarPartida(gestor, opcion);
+								eliminarPartida(gestor, gestor.usuario_activo);
 
 							}
 						}
