@@ -63,7 +63,17 @@ int main() {
 						else {
 							cout << "Indica el numero de pasos para crear el tablero aleatorio: ";
 							cin >> pasos;
-							insertarAleatoria(gestor, pasos);
+							int opcion= insertarAleatoria(gestor, pasos);
+							Juego& partida_actual = partida(gestor, opcion);
+							if (RecibirMov(partida_actual)) {
+								if (estado(partida_actual) != JUGANDO) {
+									mostrarEstado(partida_actual);
+									eliminarPartida(gestor, gestor.usuario_activo);
+
+								}
+							}
+
+
 						}
 					}
 					else {
